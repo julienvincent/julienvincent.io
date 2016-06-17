@@ -6,8 +6,8 @@
   "scripts": {
     "clean": "rimraf build",
     "start": "node server/server.js",
-    "bundle": "node server/bundle.js",
-    "publish": "npm run bundle && cd build && git init && git add . && git commit -m 'build' && git checkout -b gh-pages && git push git@github.com:julienvincent/julienvincent.github.io master --force",
+    "bundle": "rimraf build && node server/bundle.js",
+    "publish": "npm run bundle && cd build && git init && git add . && git commit -m 'build' && git push git@github.com:julienvincent/julienvincent.github.io master --force",
     "docs:publish": "npm run docs:clean && npm run docs:make && cd _book && git init && git add . && git commit -m 'docs' && git checkout -b gh-pages && git push git@github.com:julienvincent/modelizr gh-pages --force && cd ../ && npm run docs:clean",
     "lint": "eslint app; exit 0"
   },
