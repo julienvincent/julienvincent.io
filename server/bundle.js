@@ -25,4 +25,5 @@ webpack(config).run(function(err) {
     console.log('js compiled')
 })
 
-fs.copy(path.join(__dirname, "../index.html"), path.join(dir, 'index.html'), {});
+fs.copy(path.join(__dirname, "../index.html"), path.join(dir, 'index.html'), {})
+fs.copy(path.join(__dirname, "../static/icomoon"), path.join(dir, 'icomoon'), {})

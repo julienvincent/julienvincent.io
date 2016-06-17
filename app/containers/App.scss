@@ -25,15 +25,35 @@
       }
     }
 
-    .username {
-      align-self: flex-start;
-      font-size: 150%;
-      color: #2980b9;
+    .sub-name {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      z-index: 10;
+
+      .username {
+        align-self: flex-start;
+        font-size: 150%;
+        color: #2980b9;
+      }
+
+      .icons {
+        height: 100%;
+
+        a {
+          font-size: 130%;
+          margin-left: 15px;
+          color: #bdc3c7;
+          transition: .1s ease-out;
+          text-decoration: none;
+
+          &:hover {
+            color: #3498db;
+          }
+        }
+      }
     }
   }
 
-  .circle {
-    position: absolute;
-    border-radius: 50%;
-  }
+  @import "Circles/Circles";
 }

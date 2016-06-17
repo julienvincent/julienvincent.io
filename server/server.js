@@ -10,6 +10,7 @@ server.use(require('webpack-dev-middleware')(webpack(config), {
     publicPath: config.output.publicPath
 }))
 
+server.use(express.static(path.join(__dirname, '../static')))
 server.get('*', function(req, res) {
     res.send(fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8'))
 })

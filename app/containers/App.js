@@ -1,6 +1,7 @@
 import { Component } from 'react'
-import { div, p, text, Motion, spring } from '../components'
-import _ from 'lodash'
+import { div, p, text, a } from '../components'
+
+import Circles from './Circles/Circles'
 
 export default
 class App extends Component {
@@ -9,8 +10,7 @@ class App extends Component {
 
         this.state = {
             cursor: true,
-            username: "",
-            circles: []
+            username: ""
         }
     }
 
@@ -39,65 +39,22 @@ class App extends Component {
             setTimeout(this.blink, 600)
         })
     }
-
-    createCircle = ({clientX, clientY}) => {
-        const colors = [
-            "#2980b9",
-            "#34495e",
-            "#e74c3c",
-            "#27ae60",
-            "#16a085",
-            "#d35400",
-            "#7f8c8d",
-            "#8e44ad"
-        ]
-        this.setState({
-            circles: [...this.state.circles, {
-                x: clientX,
-                y: clientY,
-                id: Math.random(),
-                background: _.sample(colors),
-                size: _.random(50, 420)
-            }]
-        })
-    }
-
-    removeCircle = _id => {
-        this.setState({
-            circles: _.filter(this.state.circles, ({id}) => id != _id)
-        })
-    }
-
+    
     render() {
-        const {cursor, username, circles} = this.state
+        const {cursor, username} = this.state
 
         return (
-            div({className: 'app', onClick: this.createCircle},
+            div({className: 'app'},
+                Circles(),
+
                 div({className: 'center'},
                     p({className: 'name'}, "Julien ", text({}, "Vincent")),
-                    p({className: 'username'}, username, " ", text({style: {color: `${cursor ? 'transparent' : 'inherit'}`}}, "_"))
-                ),
+                    div({className: 'sub-name'},
+                        p({className: 'username'}, username, " ", text({style: {color: `${cursor ? 'transparent' : 'inherit'}`}}, "_")),
 
-                _.map(circles, ({id, x, y, background, size}) => (
-                        Motion({
-                                defaultStyle: {dimensions: 0},
-                                style: {dimensions: spring(size, {stiffness: 120})},
-                                onRest: () => this.removeCircle(id),
-                                key: id
-                            },
-                            ({dimensions}) => (
-                                div({
-                                    className: 'circle',
-                                    style: {
-                                        width: dimensions,
-                                        height: dimensions,
-                                        left: x - (dimensions / 2),
-                                        top: y - (dimensions / 2),
-                                        opacity: 1 - (dimensions / size),
-                                        background
-                                    }
-                                })
-                            )
+                        div({className: 'icons'},
+                            a({className: "icon-github", href: "https://github.com/julienvincent", target: "_blank"}),
+                            a({className: "icon-twitter", href: "https://twitter.com/julienvincent_", target: "_blank"})
                         )
                     )
                 )
