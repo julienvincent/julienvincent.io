@@ -13,4 +13,10 @@ p, a, text {
   font-family: 'Lato', sans-serif;
 }
 
+@mixin phone {
+  @media (max-width: 480px) {
+    @content;
+  }
+}
+
 @import "containers/App";

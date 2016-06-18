@@ -39,7 +39,7 @@ class App extends Component {
             setTimeout(this.blink, 600)
         })
     }
-    
+
     render() {
         const {cursor, username} = this.state
 
@@ -54,7 +54,8 @@ class App extends Component {
 
                         div({className: 'icons'},
                             a({className: "icon-github", href: "https://github.com/julienvincent", target: "_blank"}),
-                            a({className: "icon-twitter", href: "https://twitter.com/julienvincent_", target: "_blank"})
+                            a({className: "icon-twitter", href: "https://twitter.com/julienvincent_", target: "_blank"}),
+                            a({className: "icon-mail", href: "mailto:julienlucvincent@gmail.com"})
                         )
                     )
                 )
