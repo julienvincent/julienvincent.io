@@ -8,9 +8,10 @@
 
 body {
   margin: 0;
+  background-color: #eeeeee;
 }
 
-p, a, text {
+p, a, span {
   margin: 0;
   padding: 0;
 }

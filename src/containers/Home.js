@@ -1,6 +1,7 @@
 // @flow
 import React, {Component} from "react"
 import styled from "styled-components"
+import {Link} from "../components"
 import {media} from "../utils"
 
 import Circles from "./Circles"
@@ -73,17 +74,13 @@ class Home extends Component<Props, State> {
 
             <Links>
               {/* eslint-disable */}
-              <a
+              <Link
                 className="icon-github"
                 href="https://github.com/julienvincent"
-                target="_blank"
-                rel="noopener noreferrer"
               />
-              <a
+              <Link
                 className="icon-twitter"
                 href="https://twitter.com/julienvincent_"
-                target="_blank"
-                rel="noopener noreferrer"
               />
               <a
                 className="icon-mail"
@@ -106,7 +103,6 @@ const Container = styled.div`
   width: 100%;
   height: 100%;
   min-height: 100vh;
-  background: #eeeeee;
 `
 
 const Content = styled.div`
@@ -127,7 +123,7 @@ const Title = styled.p`
   }
 
   ${media.phone`
-      font-size: 400%;
+    font-size: 400%;
   `};
 `
 
