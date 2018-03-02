@@ -27,7 +27,7 @@ class CV extends Component {
             <p>
               Contracting for{" "}
               <Link href="http://www.inradagroup.com">Inrada Group</Link> where
-              I am acting as software architect on a data-mining project
+              I am acting as Software Architect on a data-mining project
             </p>
 
             <h4>Achievements</h4>
@@ -57,7 +57,7 @@ class CV extends Component {
 
             <p>
               Worked at <Link href="https://onedayonly.co.za">OneDayOnly</Link>{" "}
-              as a software engineer where I later transitioned primarily to
+              as a Software Engineer where I later transitioned primarily to
               DevOps
             </p>
 

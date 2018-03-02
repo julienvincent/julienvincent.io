@@ -6,6 +6,7 @@ const Container = styled.div`
   display: flex;
   align-items: flex-start;
   margin-left: 10px;
+  margin-bottom: 5px;
 
   i {
     margin-right: 10px;
