@@ -1,5 +1,6 @@
 // @flow
 import {Timeline, Bullet, Link} from "../components"
+import {Link as RLink} from "react-router-dom"
 import React, {Component} from "react"
 import styled from "styled-components"
 import {media} from "../utils"
@@ -14,7 +15,7 @@ class CV extends Component {
           <p>
             My name is Julien Vincent. I am a full stack software
             engineer/architect with a primary focus on backend systems and
-            systems design.
+            systems design
           </p>
 
           <h1>Work Experience</h1>
@@ -105,6 +106,11 @@ class CV extends Component {
           <Bullet>SQL</Bullet>
           <Bullet>Datomic</Bullet>
           <Bullet>Networking</Bullet>
+
+          <h1>Contact Me</h1>
+
+          <a href="mailto:julienlucvincent@gmail.com">Email</a>
+          <RLink to="/">Website</RLink>
         </Content>
       </Container>
     )
