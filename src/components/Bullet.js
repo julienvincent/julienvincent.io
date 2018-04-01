@@ -16,11 +16,11 @@ const Container = styled.div`
   }
 `
 
-const Bullet = ({children}) => {
+const Bullet = (props: {children: any}) => {
   return (
     <Container>
       <i className="icon-dot" />
-      <p>{children}</p>
+      <p>{props.children}</p>
     </Container>
   )
 }

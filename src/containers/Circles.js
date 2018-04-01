@@ -4,7 +4,13 @@ import styled from "styled-components"
 import React, {Component} from "react"
 import _ from "lodash"
 
-class Circles extends Component {
+type Props = {}
+
+type State = {
+  circles: Array<Object>
+}
+
+class Circles extends Component<Props, State> {
   state = {
     circles: []
   }
@@ -17,7 +23,7 @@ class Circles extends Component {
     window.removeEventListener("click", this.createCircle)
   }
 
-  createCircle = ({clientX, clientY}) => {
+  createCircle = ({clientX, clientY}: Object) => {
     const colors = [
       "#2980b9",
       "#34495e",
@@ -43,7 +49,7 @@ class Circles extends Component {
     })
   }
 
-  removeCircle = _id => {
+  removeCircle = (_id: number) => {
     this.setState({
       circles: _.filter(this.state.circles, ({id}) => id !== _id)
     })

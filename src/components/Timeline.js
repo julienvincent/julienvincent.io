@@ -32,7 +32,11 @@ const Content = styled.div`
   padding-top: 0;
 `
 
-const Timeline = ({children}) => {
+type Props = {
+  children: any
+}
+
+const Timeline = ({children}: Props) => {
   return (
     <Container>
       <Margin height="20px">

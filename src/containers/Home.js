@@ -19,7 +19,7 @@ class Home extends Component<Props, State> {
     username: ""
   }
 
-  interval = null
+  interval: any = 0
 
   componentDidMount() {
     this.interval = setInterval(this.blink, 600)
@@ -27,6 +27,9 @@ class Home extends Component<Props, State> {
   }
 
   componentWillUnmount() {
+    if (!this.interval) {
+      return
+    }
     clearInterval(this.interval)
   }
 
@@ -37,6 +40,9 @@ class Home extends Component<Props, State> {
     const write_letter = () => {
       const {username} = this.state
       if (word.length === username.length) {
+        if (!interval) {
+          return
+        }
         return clearInterval(interval)
       }
       this.setState({
@@ -59,7 +65,7 @@ class Home extends Component<Props, State> {
 
     return (
       <Container>
-        <Circles/>
+        <Circles />
 
         <Content>
           <Title>

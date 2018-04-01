@@ -5,7 +5,7 @@ import React, {Component} from "react"
 import styled from "styled-components"
 import {media} from "../utils"
 
-class CV extends Component {
+class CV extends Component<{}> {
   render() {
     return (
       <Container>

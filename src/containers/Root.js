@@ -4,7 +4,7 @@ import React, {Component} from "react"
 import Home from "./Home"
 import CV from "./CV"
 
-class Root extends Component {
+class Root extends Component<{}> {
   render() {
     return (
       <HashRouter>
