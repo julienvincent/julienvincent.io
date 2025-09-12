@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 64 64" aria-hidden="true">
+  <g fill="none" stroke="#222" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+    <!-- J -->
+    <path d="M12 16h18" />
+    <path d="M30 16v24" />
+    <path d="M30 40C30 52 18 52 18 48" />
+    <!-- V -->
+    <path d="M40 16l8 32 8-32" />
+  </g>
+  <title>JV</title>
+</svg>

@@ -1,26 +1,40 @@
 {
   "name": "julienvincent.io",
-  "version": "2.0.0",
   "private": true,
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -b master -d build"
-  },
+  "version": "0.0.0",
+  "type": "module",
   "dependencies": {
-    "lodash": "^4.17.5",
-    "react": "^16.2.0",
-    "react-dom": "^16.2.0",
-    "react-motion": "^0.5.2",
-    "react-router-dom": "^4.2.2",
-    "styled-components": "^3.1.6"
+    "@radix-ui/react-dropdown-menu": "^2.1.16",
+    "@radix-ui/react-switch": "^1.2.6",
+    "@radix-ui/react-slot": "^1.2.3",
+    "@tanstack/react-router": "^1.132.47",
+    "@tanstack/router-plugin": "^1.132.51",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
+    "highlight.js": "^11.11.1",
+    "lowlight": "^3.3.0",
+    "lucide-react": "^0.544.0",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "rehype-highlight-code-lines": "^1.2.0",
+    "rehype-mdx-code-props": "^3.0.1",
+    "rehype-highlight": "^7.0.2",
+    "tailwind-merge": "^3.3.1"
   },
   "devDependencies": {
-    "react-scripts": "1.1.1",
-    "flow-bin": "^0.66.0",
-    "gh-pages": "^1.1.0"
+    "@mdx-js/react": "^3.1.1",
+    "@mdx-js/rollup": "^3.1.1",
+    "@tailwindcss/vite": "^4.1.13",
+    "@types/mdx": "^2.0.13",
+    "@types/node": "^24.3.1",
+    "@types/react": "^19.1.10",
+    "@types/react-dom": "^19.1.7",
+    "@vitejs/plugin-react": "^5.0.0",
+    "globals": "^16.3.0",
+    "tailwindcss": "^4.1.13",
+    "tw-animate-css": "^1.3.8",
+    "typescript": "~5.8.3",
+    "vite": "^7.1.2"
   }
 }

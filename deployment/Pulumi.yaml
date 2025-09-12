@@ -1,0 +1,4 @@
+name: julienvincent-io
+runtime: nodejs
+description: Personal website
+main: index.ts
