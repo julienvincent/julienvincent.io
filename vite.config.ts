@@ -67,7 +67,8 @@ export default defineConfig({
       routeFileIgnorePrefix: '-',
       quoteStyle: 'single',
     }),
-    react(),
+    // This include string is to get HMR working for mdx files
+    react({ include: [/\.([jt]sx|mdx)$/] }),
     tailwindcss(),
   ],
   resolve: {
@@ -77,5 +78,6 @@ export default defineConfig({
   },
   server: {
     allowedHosts: true,
+    host: '0.0.0.0',
   },
 });
