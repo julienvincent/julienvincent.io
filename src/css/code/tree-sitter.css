@@ -1,0 +1,304 @@
+@import './theme.css';
+
+code:not(pre code) {
+  background: var(--color-code-fg-0);
+  padding: 0.2em 0.4em;
+  border-radius: 4px;
+  font-size: 0.9em;
+  color: var(--color-secondary);
+  font-variant-ligatures: none;
+}
+
+.dark code:not(pre code) {
+  background: var(--color-code-bg-2);
+  color: var(--color-secondary);
+}
+
+pre code.tree-sitter {
+  display: block;
+  padding: 1em;
+  font-size: 0.9em;
+  line-height: 1.2;
+  font-variant-ligatures: none;
+}
+
+.tree-sitter::selection,
+.tree-sitter ::selection {
+  background-color: var(--color-code-bg-3);
+}
+
+.tree-sitter .code-line {
+  min-width: 100%;
+  padding-left: 12px;
+  padding-right: 12px;
+  margin-left: -12px;
+  margin-right: -12px;
+  border-left: 4px solid transparent; /* prepare for highlighted code-lines */
+
+  display: inline-block;
+}
+
+.tree-sitter .highlighted-code-line {
+  background-color: var(--color-code-bg-3);
+  border-left: 4px solid var(--color-accent);
+}
+
+.tree-sitter .numbered-code-line::before {
+  content: attr(data-line-number);
+
+  margin-left: -8px;
+  margin-right: 24px;
+  width: 1rem;
+  color: var(--color-code-foreground);
+  text-align: right;
+
+  display: inline-block;
+}
+
+.tree-sitter {
+  color: var(--color-code-fg-0);
+}
+
+.tree-sitter .attribute {
+  color: var(--color-code-purple);
+}
+
+.tree-sitter .boolean {
+  color: var(--color-code-purple);
+}
+
+.tree-sitter .comment {
+  color: var(--color-code-grey-1);
+}
+
+.tree-sitter .constant {
+  color: var(--color-code-orange);
+}
+
+.tree-sitter .constructor {
+  color: var(--color-code-fg-0);
+}
+
+.tree-sitter .embedded {
+  color: var(--color-code-blue);
+}
+
+.tree-sitter .error {
+  color: var(--color-code-bg-0);
+  background-color: var(--color-code-bg-red);
+}
+
+.tree-sitter .escape {
+  color: var(--color-code-aqua);
+}
+
+.tree-sitter .keyword,
+.tree-sitter .keyword\.function,
+.tree-sitter .keyword\.conditional,
+.tree-sitter .keyword\.operator {
+  color: var(--color-code-red);
+}
+
+.tree-sitter .keyword\.directive {
+  color: var(--color-code-purple);
+}
+
+.tree-sitter .label {
+  color: var(--color-code-orange);
+}
+
+.tree-sitter .markup {
+  color: var(--color-code-fg-0);
+}
+
+.tree-sitter .module {
+  color: var(--color-code-blue);
+}
+
+.tree-sitter .number {
+  color: var(--color-code-purple);
+}
+
+.tree-sitter .operator {
+  color: var(--color-code-orange);
+}
+
+.tree-sitter .string {
+  color: var(--color-code-aqua);
+}
+
+.tree-sitter .string\.escape {
+  color: var(--color-code-aqua);
+}
+
+.tree-sitter .string\.regexp {
+  color: var(--color-code-purple);
+}
+
+.tree-sitter .string\.escape.string\.regexp {
+  color: var(--color-code-aqua);
+}
+
+.tree-sitter .string\.special {
+  color: var(--color-code-aqua);
+}
+
+.tree-sitter .string\.special\.symbol {
+  color: var(--color-code-fg-0);
+}
+
+.tree-sitter .property {
+  color: var(--color-code-blue);
+}
+
+.tree-sitter .property\.builtin {
+  color: var(--color-code-aqua);
+}
+
+.tree-sitter .punctuation {
+  color: var(--color-code-grey-0);
+}
+
+.tree-sitter .punctuation\.bracket {
+  color: var(--color-code-grey-1);
+}
+
+.tree-sitter .punctuation\.delimiter {
+  color: var(--color-code-grey-0);
+}
+
+.tree-sitter .punctuation\.special {
+  color: var(--color-code-orange);
+}
+
+.tree-sitter .tag {
+  color: var(--color-code-orange);
+}
+
+.tree-sitter .type {
+  color: var(--color-code-yellow);
+}
+
+.tree-sitter .type\.builtin {
+  color: var(--color-code-yellow);
+}
+
+.tree-sitter .variable {
+  color: var(--color-code-fg-0);
+}
+
+.tree-sitter .variable\.builtin {
+  color: var(--color-code-purple);
+}
+
+.tree-sitter .variable\.member {
+}
+
+.tree-sitter .variable\.parameter {
+  color: var(--color-code-fg-1);
+}
+
+.tree-sitter .comment\.documentation {
+  color: var(--color-code-grey-2);
+}
+
+.tree-sitter .constant\.builtin {
+  color: var(--color-code-yellow);
+}
+
+.tree-sitter .constructor\.builtin {
+  color: var(--color-code-aqua);
+}
+
+.tree-sitter .function,
+.tree-sitter .function\.call,
+.tree-sitter .function\.method,
+.tree-sitter .function\.method\.call {
+  color: var(--color-code-green);
+}
+
+.tree-sitter .function\.builtin {
+  color: var(--color-code-purple);
+}
+
+.tree-sitter .function\.macro {
+  color: var(--color-code-purple);
+}
+
+.tree-sitter .text\.literal {
+  color: var(--color-code-fg-0);
+}
+
+.tree-sitter .text\.strong {
+  color: var(--color-code-fg-0);
+  font-weight: bold;
+}
+
+.tree-sitter .text\.emphasis {
+  color: var(--color-code-fg-0);
+  font-style: italic;
+}
+
+.tree-sitter .text\.title {
+  color: var(--color-code-yellow);
+}
+
+.tree-sitter .markup\.bold {
+  color: var(--color-code-fg-0);
+}
+
+.tree-sitter .markup\.heading {
+  color: var(--color-code-yellow);
+}
+
+.tree-sitter .markup\.italic {
+  color: var(--color-code-fg-0);
+}
+
+.tree-sitter .markup\.link {
+  color: var(--color-code-blue);
+}
+
+.tree-sitter .markup\.list {
+  color: var(--color-code-orange);
+}
+
+.tree-sitter .markup\.quote {
+  color: var(--color-code-grey-2);
+}
+
+.tree-sitter .markup\.raw {
+  color: var(--color-code-green);
+}
+
+.tree-sitter .markup\.strikethrough {
+  text-decoration: line-through;
+}
+
+.tree-sitter .markup\.link\.url {
+  color: var(--color-code-aqua);
+}
+
+.tree-sitter .markup\.list\.checked {
+  color: var(--color-code-green);
+}
+
+.tree-sitter .markup\.list\.numbered {
+  color: var(--color-code-orange);
+}
+
+.tree-sitter .markup\.list\.unchecked {
+  color: var(--color-code-grey-1);
+}
+
+.tree-sitter .markup\.list\.unnumbered {
+  color: var(--color-code-orange);
+}
+
+.tree-sitter .markup\.raw\.block {
+  background-color: var(--color-code-bg-1);
+}
+
+.tree-sitter .markup\.raw\.inline {
+  color: var(--color-code-green);
+}

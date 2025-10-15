@@ -68,7 +68,7 @@ export function Pre(props: PreProps) {
     return (
       <pre
         {...rest}
-        className={cn('rounded-md bg-code-background', className)}
+        className={cn('rounded-md bg-code-background font-mono', className)}
       />
     );
   }
@@ -93,7 +93,12 @@ export function Pre(props: PreProps) {
 }
 
 export function Code(props: ComponentProps<'code'>) {
-  return <code {...props} className={cn(props.className, 'mb-5')} />;
+  return (
+    <code
+      {...props}
+      className={cn(props.className, 'mb-5 font-mono overflow-x-scroll')}
+    />
+  );
 }
 
 const components: MDXComponents = {

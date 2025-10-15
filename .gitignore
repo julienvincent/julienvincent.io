@@ -5,6 +5,9 @@ logs
 *.log
 pnpm-debug.log*
 
+.tree-sitter
+.tanstack
+
 node_modules
 dist
 dist-ssr

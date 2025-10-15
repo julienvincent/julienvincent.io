@@ -3,15 +3,13 @@ import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import mdx from '@mdx-js/rollup';
 import { tanstackRouter } from '@tanstack/router-plugin/vite';
-import rehypeHighlight from 'rehype-highlight';
 import rehypeHighlightLines from 'rehype-highlight-code-lines';
 import rehypeCodeProps from 'rehype-mdx-code-props';
 import path from 'node:path';
+import rehypeTreeSitterHighlight, {
+  type HighlighterOptions,
+} from '@julienvincent/rehype-tree-sitter-highlight';
 
-import clojure from 'highlight.js/lib/languages/clojure';
-import { common } from 'lowlight';
-
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [
     {
@@ -19,8 +17,44 @@ export default defineConfig({
       ...mdx({
         providerImportSource: '@mdx-js/react',
         rehypePlugins: [
-          [rehypeHighlight, { languages: { ...common, clojure: clojure } }],
-          rehypeHighlightLines,
+          [
+            rehypeTreeSitterHighlight,
+            {
+              enter: (node) => {
+                const meta = node.data?.meta;
+                if (meta && meta.includes('no-tree-sitter')) {
+                  return false;
+                }
+                return true;
+              },
+              leave: (node) => {
+                if (node.data?.meta) {
+                  node.data.meta = node.data.meta.replace('no-tree-sitter', '');
+                }
+
+                (node.properties.className as string[]).push(
+                  // The `hljs` class is required for rehypeHighlightLines to work
+                  'hljs',
+                  'tree-sitter',
+                );
+              },
+              grammar_paths: [
+                path.join(process.cwd(), '.tree-sitter/grammars'),
+              ],
+              query_paths: [path.join(process.cwd(), 'queries/default/')],
+              resolveQueryPath: (query) => {
+                return path.join(process.cwd(), 'queries', query);
+              },
+            } as HighlighterOptions,
+          ],
+
+          [
+            rehypeHighlightLines,
+            {
+              showLineNumbers: true,
+            },
+          ],
+
           rehypeCodeProps,
         ],
       }),
@@ -32,7 +66,6 @@ export default defineConfig({
       generatedRouteTree: './src/tree.gen.ts',
       routeFileIgnorePrefix: '-',
       quoteStyle: 'single',
-      enableRouteGeneration: true
     }),
     react(),
     tailwindcss(),

@@ -1,0 +1,6 @@
+.git
+.jj
+.tanstack
+.tree-sitter
+dist
+node_modules

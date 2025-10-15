@@ -4,7 +4,10 @@ WORKDIR /app
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 
-RUN npm i -g pnpm@10
+RUN npm i -g pnpm@10 rust-just
+
+COPY Justfile ./
+RUN just prepare
 
 COPY package.json pnpm-lock.yaml ./
 
@@ -12,7 +15,7 @@ RUN pnpm install --frozen-lockfile
 
 COPY ./ /app
 
-RUN pnpm tsc -b && pnpm vite build
+RUN just build
 
 FROM nginx:1.29.1-alpine
 WORKDIR /app
