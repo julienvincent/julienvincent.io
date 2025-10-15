@@ -1,0 +1,159 @@
+# {props.title}
+
+<Date date={props.date} />
+
+So, I sat down to write [a post on using treesitter injections in Neovim](/posts/treesitter-language-injections) but
+quickly realised that I needed a way to actually render these code block examples on the wide web.
+
+I suppose I could have just posted screenshots or something, but I don't think that would have really aligned very well
+with the spirit of the post.
+
+After a bit of digging I discovered `:ToHtml` (See `:h ToHtml`) in Neovim which allows rendering a section of selected
+text as HTML. I could then dump that HTML snippet somewhere and embed it into my page using an `<iframe />` or an
+`<object />`.
+
+Eh, it worked. But I couldn't really get it to align just right with the rest of the formatting of the post, and it
+looked quite out of place. It was also a real pain to generate the snippets and get them into the right place in my
+site. And then you have a bunch of random, disconnected snippets lying around.
+
+What I really wanted was to have some kind of treesitter rendering pipeline going on. My initial idea was to bundle the
+`tree-sitter-highlight` crate as a WASM module and render the code-blocks on the fly at runtime. This would also have
+the added benefit of allowing readers to change the queries in-place and see how it affects the highlighting.
+
+I tried this out and managed to get just enough of a prototype working that I could see how much effort it would be to
+fully realise. I still like the idea but trying to wrangle all the treesitter crates into WASM, plus each grammar I
+wanted to use, and build an HTML transformer pipeline on top of it all just seemed a bit exhausting.
+
+Maybe I'll come back to this in the future.
+
+---
+
+This site is mostly rendered by an MDX compile-time pipeline which uses [rehype](https://github.com/rehypejs/rehype)
+plugins to transform HTML and syntax-highlight markdown code blocks. At the time I was using
+[rehype-highlight](https://github.com/rehypejs/rehype-highlight) which under the hood uses
+[highlight.js](https://github.com/highlightjs/highlight.js) for syntax highlighting.
+
+I really like how this pipeline runs entirely at compile-time and just produces a bunch of pre-highlighted, static files
+that can be served to the browser. I decided I wanted to retain this property and just swap out the compile-time plugin
+with something that was based on treesitter.
+
+## The Task
+
+So here are the overall goals of this project:
+
+- Allow writing posts entirely in MDX, including the code-block examples.
+- Perform all code-block syntax highlighting statically and at compile-time
+- Allow loading in any treesitter grammars I can find on the wide web (So it needs to be able to compile grammars on the
+  fly).
+- Produce syntax highlighting results that mimic my editor as closely as possible. This means being able to load and use
+  the same Neovim treesitter highlight and injection queries.
+- Allow selectively applying treesitter queries to specific code-blocks.
+
+  This was specifically a requirement for the post that I was planning on writing. Being on the topic of treesitter
+  injections, it needed a way to show a before-and-after comparison - and therefore a way to selectively apply
+  treesitter injection queries.
+
+Now there are some existing rehype treesitter plugins lying around, such as
+[this one](https://github.com/haze/rehype-tree-sitter), but none of them met the goals I had outlined for this. I'm also
+pretty sure my requirements are going to evolve along with this site and so the only option was to fry up something new.
+
+### The Pipeline
+
+Treesitter has an official
+[tree-sitter-highlight](https://github.com/tree-sitter/tree-sitter/tree/da5926d6f571475625bd631c593b255c437e9135/crates/highlight)
+crate which exposes a high-level API for working with highlights and injections. This seemed like a good place to start.
+
+The [tree-sitter-loader](https://docs.rs/tree-sitter-loader/0.25.10/tree_sitter_loader/) crate gives us some APIs for
+loading and compiling (with cache) treesitter grammars from the filesystem. This means all I need to do is clone down
+the grammars I want into some directory and I can dynamically load them up from there.
+
+We also need a way to interact with all of this from JavaScript land, and for this we can build some bindings using
+[napi-rs](https://napi.rs/). (What a great experience this was, by the way).
+
+Lastly we can wrap it all up inside a JavaScript rehype plugin interface which spits out
+[hast](https://github.com/syntax-tree/hast) (HTML AST) `<span>` nodes containing classnames that match our treesitter
+highlight captures.
+
+Didn't take too long to get a prototype going, and didn't take much longer after that to realise we had a big problem.
+It was all going great until I tried to test out the language injections.
+
+I wanted to apply the following Clojure injection query
+
+```query showLineNumbers={4}
+((str_lit) @injection.content
+  (#match? @injection.content
+    "^\"(CREATE|SELECT)")
+  (#offset! @injection.content 0 1 0 -1)
+  (#set! injection.language "sql"))
+```
+
+Unfortunately the `#offset!`
+[directive](https://tree-sitter.github.io/tree-sitter/using-parsers/queries/3-predicates-and-directives.html#directives)
+is not baked into treesitter. It's a custom Neovim-specific directive and it's absolutely _required_ for language
+injections to work with the Clojure grammar. It allows tweaking the part of the matched node that should be considered
+for injections.
+
+At this point I should have just ditched `tree-sitter-highlight` and built it myself, but instead I wasted a few more
+hours adding support for `#offset!` to the official crate. This got me _so_ close. It worked! Mostly!
+
+### Neovim Queries
+
+In order to meet my requirement of getting highlighting to match my personal editor (Neovim) I needed to load in the
+same queries that are used by my editor.
+
+To do this I cloned down the [nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter) repo which has a
+`./queries` directory containing all the treesitter highlight and injection queries for most languages used by Neovim.
+Theoretically, if I loaded up these queries then the resulting highlights should be _identical_. They weren't.
+
+The problem came down to two things:
+
+1. There are a few other Neovim-specific treesitter directives (See `:h treesitter-directives`) besides the `#offset!`
+   directive already discussed that are used by these queries, and `tree-sitter-highlight` doesn't support them.
+2. Neovim uses its own internal highlighting logic which just doesn't match what `tree-sitter-highlight` spits out. This
+   means different highlights end up taking priority, and we have no levers to pull to change this.
+
+The easiest way I could see to solve both of these issues was to actually ditch `tree-sitter-highlight` and just use the
+underlying treesitter Query API to process the highlights myself. This would give me the control to handle custom Neovim
+directives however I want, and to intentionally make sure the highlight priority matches that produced by Neovim.
+
+### Selective Queries
+
+The highlight pipeline is now chugging along very nicely. All that remains is to add support for selectively applying
+queries to code blocks.
+
+We can achieve this by parsing out metadata attached to the code block in our rehype plugin, and use this to select
+additional queries to load up and append to the highlighter pipeline.
+
+Here is an example so you can see that in action. The below example has no fancy injections
+
+````markdown nolinenumbers="true"
+```clojure
+(defn some-func
+  "This should now be **markdown**!"
+  [])
+```
+````
+
+But if we attach the `query="docstrings"` property to the code block, this instructs the plugin to load more queries
+from the `./queries/docstrings` directory. And now we got some sweet, sweet markdown highlighting.
+
+````markdown query="docstrings" nolinenumbers="true"
+```clojure query="docstrings"
+(defn some-func
+  "This should now be **markdown**!"
+  [])
+```
+````
+
+This allows me to, in the same post, show code block examples that both have and don't have special queries!
+
+## The End
+
+Well that pretty much wraps that up. I'm very happy with the result of this little side-quest.
+
+If you find yourself wanting to use any of this for yourself, or just want to reference it for your own use, you can
+find the source for the plugin over here:
+
+[julienvincent/rehype-tree-sitter-highlight](https://github.com/julienvincent/rehype-tree-sitter-highlight)
+
+It's not very nicely wrapped up, but knock yourself out.

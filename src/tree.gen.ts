@@ -14,6 +14,8 @@ import { Route as PostsRouteImport } from './routes/posts'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProjectsIndexRouteImport } from './routes/projects/index'
 import { Route as PostsIndexRouteImport } from './routes/posts/index'
+import { Route as PostsTreesitterLanguageInjectionsRouteImport } from './routes/posts/treesitter-language-injections'
+import { Route as PostsTreesitterCodeBlocksRouteImport } from './routes/posts/treesitter-code-blocks'
 
 const ProjectsRoute = ProjectsRouteImport.update({
   id: '/projects',
@@ -40,16 +42,32 @@ const PostsIndexRoute = PostsIndexRouteImport.update({
   path: '/',
   getParentRoute: () => PostsRoute,
 } as any)
+const PostsTreesitterLanguageInjectionsRoute =
+  PostsTreesitterLanguageInjectionsRouteImport.update({
+    id: '/treesitter-language-injections',
+    path: '/treesitter-language-injections',
+    getParentRoute: () => PostsRoute,
+  } as any)
+const PostsTreesitterCodeBlocksRoute =
+  PostsTreesitterCodeBlocksRouteImport.update({
+    id: '/treesitter-code-blocks',
+    path: '/treesitter-code-blocks',
+    getParentRoute: () => PostsRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/posts': typeof PostsRouteWithChildren
   '/projects': typeof ProjectsRouteWithChildren
+  '/posts/treesitter-code-blocks': typeof PostsTreesitterCodeBlocksRoute
+  '/posts/treesitter-language-injections': typeof PostsTreesitterLanguageInjectionsRoute
   '/posts/': typeof PostsIndexRoute
   '/projects/': typeof ProjectsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/posts/treesitter-code-blocks': typeof PostsTreesitterCodeBlocksRoute
+  '/posts/treesitter-language-injections': typeof PostsTreesitterLanguageInjectionsRoute
   '/posts': typeof PostsIndexRoute
   '/projects': typeof ProjectsIndexRoute
 }
@@ -58,15 +76,37 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/posts': typeof PostsRouteWithChildren
   '/projects': typeof ProjectsRouteWithChildren
+  '/posts/treesitter-code-blocks': typeof PostsTreesitterCodeBlocksRoute
+  '/posts/treesitter-language-injections': typeof PostsTreesitterLanguageInjectionsRoute
   '/posts/': typeof PostsIndexRoute
   '/projects/': typeof ProjectsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/posts' | '/projects' | '/posts/' | '/projects/'
+  fullPaths:
+    | '/'
+    | '/posts'
+    | '/projects'
+    | '/posts/treesitter-code-blocks'
+    | '/posts/treesitter-language-injections'
+    | '/posts/'
+    | '/projects/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/posts' | '/projects'
-  id: '__root__' | '/' | '/posts' | '/projects' | '/posts/' | '/projects/'
+  to:
+    | '/'
+    | '/posts/treesitter-code-blocks'
+    | '/posts/treesitter-language-injections'
+    | '/posts'
+    | '/projects'
+  id:
+    | '__root__'
+    | '/'
+    | '/posts'
+    | '/projects'
+    | '/posts/treesitter-code-blocks'
+    | '/posts/treesitter-language-injections'
+    | '/posts/'
+    | '/projects/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -112,14 +152,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PostsIndexRouteImport
       parentRoute: typeof PostsRoute
     }
+    '/posts/treesitter-language-injections': {
+      id: '/posts/treesitter-language-injections'
+      path: '/treesitter-language-injections'
+      fullPath: '/posts/treesitter-language-injections'
+      preLoaderRoute: typeof PostsTreesitterLanguageInjectionsRouteImport
+      parentRoute: typeof PostsRoute
+    }
+    '/posts/treesitter-code-blocks': {
+      id: '/posts/treesitter-code-blocks'
+      path: '/treesitter-code-blocks'
+      fullPath: '/posts/treesitter-code-blocks'
+      preLoaderRoute: typeof PostsTreesitterCodeBlocksRouteImport
+      parentRoute: typeof PostsRoute
+    }
   }
 }
 
 interface PostsRouteChildren {
+  PostsTreesitterCodeBlocksRoute: typeof PostsTreesitterCodeBlocksRoute
+  PostsTreesitterLanguageInjectionsRoute: typeof PostsTreesitterLanguageInjectionsRoute
   PostsIndexRoute: typeof PostsIndexRoute
 }
 
 const PostsRouteChildren: PostsRouteChildren = {
+  PostsTreesitterCodeBlocksRoute: PostsTreesitterCodeBlocksRoute,
+  PostsTreesitterLanguageInjectionsRoute:
+    PostsTreesitterLanguageInjectionsRoute,
   PostsIndexRoute: PostsIndexRoute,
 }
 

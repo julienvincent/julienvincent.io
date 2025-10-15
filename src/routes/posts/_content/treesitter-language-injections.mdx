@@ -1,0 +1,343 @@
+# {props.title}
+
+<Date date={props.date} />
+
+I've been using treesitter for quite some time now. I've [built plugins](https://github.com/julienvincent/nvim-paredit)
+that are powered by it, [written grammars](https://github.com/julienvincent/tree-sitter-numscript) (Well, vibed them),
+altered my own custom highlighting queries - and yet I am still constantly surprised at how flexible and powerful this
+technology is.
+
+I want to share some of the ways I apply treesitter in my own workflow. I don't generally see many people getting their
+toes wet in their own space, and it can be simpler than you might think.
+
+---
+
+As I currently write a lot of Clojure in my day job I will be using this as my point of discussion. It also has a lot of
+areas in which we can vigorously apply treesitter for great improvement.
+
+### Injections!
+
+Today's topic is mostly about language injections, so let's kick this off with Clojure docstrings. These are essentially
+optional strings placed after the name of the function and are used for doc generation as well as autocompletion.
+
+They look like this:
+
+````clojure
+(defn sum
+  "This function returns the sum of `a` and `b`
+
+   Opts:
+   - `:print?` (**true|false**): Prints the result before returning.
+     (default) `false`.
+
+  ## Examples
+
+  ```clojure
+  (sum 1 2) ;; => 3
+  ```
+  "
+  [a b & opts]
+  ...)
+````
+
+These docstrings are however actually _markdown_, and will render as such in
+[doc sites](https://cljdoc.org/d/com.kepler16/kmono/4.10.2/api/k16.kmono.version) and in autocompletion menus.
+
+So if this is actually markdown, why can't my editor display it as such? Well, with a small amount of effort, it can! We
+can construct a treesitter query to match these nodes and define a language injection:
+
+```query filename="queries/clojure/injections.scm"
+;; extends
+
+((list_lit
+  ((sym_lit) @def-type ;; match the 'defn' symbol
+   (sym_lit) @def-name ;; match the function name ('sum')
+   (str_lit) @docstring @injection.content) ;; mark the docstring as the injection content
+   (vec_lit)) ;; function arguments
+
+  ;; Only apply this match to defn and defn- functions
+  (#match? @def-type "^(defn-?)$")
+  ;; This #offset! directive is specific to the clojure grammar. Clojure strings include
+  ;; the outer `"` characters, so this offset applies the capture to the string *content*
+  ;; only.
+  (#offset! @injection.content 0 1 0 -1)
+  (#set! injection.language "markdown")) ; Set the language to 'markdown'
+```
+
+**Note**: This is an overly simplified query to make it easier to parse in this post. In reality clojure `defn`
+functions have several additional, optional arguments that when used would cause this query to stop matching.
+
+If you work in Clojure yourself and would like to use the queries seen here you can grab the full queries (and more)
+from
+[my Neovim config](https://github.com/julienvincent/config.nvim/blob/418436e0c25d62847a2467158ec95e7c0da0a82e/queries/clojure/injections.scm).
+
+---
+
+And now we have our Clojure docstring highlighted as markdown! It's really that easy\*.
+
+````clojure query="docstrings"
+(defn sum
+  "This function returns the sum of `a` and `b`
+
+   Opts:
+   - `:print?` (**true|false**): Prints the result before returning.
+     (default: `false`).
+
+  ## Examples
+
+  ```clojure
+  (sum 1 2) ;; => 3
+  ```
+  "
+  [a b & opts]
+  ...)
+````
+
+\*Ok, so this actually wasn't that easy. It took me several iterations and many hours to arrive at this approach. The
+`#offset!` directive is Neovim-specific and therefore is not built-in or documented by official treesitter. I didn't
+know this was a thing at the time (custom directives, that is) and so figured I could only use the directives documented
+officially by treesitter.
+
+This made what I was trying to do here pretty hard because the Clojure grammar doesn't have a node representing the
+_contents_ of a string. This means you can only match the `"entire string"`, including the `"` characters.
+
+I got around this originally by forking the Clojure treesitter grammar and
+[adding a `str_content_lit`](https://github.com/sogaiu/tree-sitter-clojure/commit/5cf3c430a3d98cfd2191b420caee1b4b36e5e917#diff-919ac210accac9ecc55a76d10a7590e3d85ca3f0e165b52d30f08faee486d0cbR345)
+node.
+
+This was actually very simple to do, worked really well, and is definitely a viable route if you are trying to do
+something fun in a language that is limited by its grammar.
+
+##### SQL
+
+Here's another one for you: embedding SQL queries in your Clojure code.
+
+Now sure, you could argue you should rather be using something like [HoneySQL](https://github.com/seancorfield/honeysql)
+(at least for Clojure) to convert data into an SQL query; but sometimes it's nicer/simpler/easier to just inline the
+damn thing. We've all been there, might as well make it look good while we're at it.
+
+Here is a simple table creation operation which we can use as an example
+
+```clojure
+(def users-table
+  "CREATE TABLE USER (
+     id text NOT NULL,
+     name text NOT NULL,
+     created_at timestamptz NOT NULL DEFAULT NOW())")
+
+(jdbc/execute! ds [users-table])
+```
+
+Well that just looks horrible. Let's see if we can make a query for this
+
+```query filename="queries/clojure/injections.scm"
+((str_lit) @injection.content
+  (#match? @injection.content
+    "^\"(SET|TRUNCATE|SELECT|CREATE|DELETE|ALTER|UPDATE|DROP|INSERT|WITH)")
+  (#offset! @injection.content 0 1 0 -1)
+  (#set! injection.language "sql"))
+```
+
+This query essentially just runs a regex match on any strings to try finding something that resembles an SQL query.
+Probably not the most performant query - but very effective.
+
+This allows strings to be interpreted as SQL regardless of where they appear in your code.
+
+```clojure query="sql"
+(def users-table
+  "CREATE TABLE USER (
+     id text NOT NULL,
+     name text NOT NULL,
+     created_at timestamptz NOT NULL DEFAULT NOW())")
+
+(jdbc/execute! ds [users-table])
+
+;; Embedded in some nested contex? No problem.
+
+(jdbc/execute! ds ["SELECT * FROM user WHERE id = ?"
+                   "user_123"])
+```
+
+An alternative approach I ran with for a while was to use Clojure metadata to inform the query. I wouldn't recommend
+this over the regex approach, but perhaps it will serve as some inspiration for a tricky use-case in your own journey.
+
+This looked something like this
+
+```query filename="queries/clojure/injections.scm"
+;; extends
+
+((list_lit
+  (sym_lit) @def-type
+
+  (sym_lit
+    (meta_lit
+      (kwd_lit
+        (kwd_name) @var.meta)))
+
+  (str_lit) @injection.content)
+
+  (#eq? @def-type "def")
+  (#eq? @var.meta "sql")
+  (#offset! @injection.content 0 1 0 -1)
+  (#set! injection.language "sql"))
+```
+
+This would allow matching on any variables with the `^:sql` metadata attached, like so
+
+```clojure query="sql"  showLineNumbers={1}
+(def ^:sql users-table
+  "CREATE TABLE USER (
+     id text NOT NULL,
+     name text NOT NULL,
+     created_at timestamptz NOT NULL DEFAULT NOW())")
+```
+
+### Formatting!
+
+So maybe you are thinking that "yea this is cool... but so what". Maybe you don't really care about pretty strings.
+Well, what about formatting? Nobody likes formatting code by hand, that would be undeniably useful.
+
+My Clojure docstrings are markdown. I have a markdown formatter. My editor now knows my docstrings are Markdown. Now
+kiss.
+
+I use [stevearc/conform.nvim](https://github.com/stevearc/conform.nvim) for formatting in Neovim, and the plugin has a
+built-in
+[injected formatter](https://github.com/stevearc/conform.nvim/blob/235dd79731c1dc51ec04abb4045cbc54727a172a/doc/advanced_topics.md#injected-language-formatting-code-blocks)
+we should be able to use.
+
+```lua showLineNumbers={5}
+conform.setup({
+  formatters_by_ft = {
+    clojure = {
+      lsp_format = "first",
+      "injected",
+    },
+    ...,
+  },
+  ...,
+})
+```
+
+And we press our format key... Whelp!
+
+```clojure nolinenumbers="true" query="docstrings"
+(defn func-a
+  "This is my
+   header
+
+   - list 1
+    - list 2
+   - list 3
+     - list 4
+
+   Some ending content"
+     []
+ )
+
+;; After formatting:
+
+(defn func-a
+  "This is my header
+
+- list 1
+- list 2
+- list 3
+  - list 4
+
+Some ending content"
+  [])
+```
+
+Conform doesn't seem to know how to handle indentation correctly and everything after the first line gets rammed to the
+left. This makes it more or less unusable - at least for Clojure. It also completely fails if you try to add a nested
+code-block within the docstring.
+
+Well that was a bit disappointing. But no worries, with a little bit of elbow grease we can just
+[write our own version](https://github.com/julienvincent/config.nvim/blob/418436e0c25d62847a2467158ec95e7c0da0a82e/lua/julienvincent/modules/formatters/injected.lua)!
+
+This can be used to override the built-in injected formatter, like so
+
+```lua showLineNumbers={3}
+conform.setup({
+  formatters = {
+    injected = require("julienvincent.modules.formatters.injected"),
+    ...,
+  },
+  ...,
+})
+```
+
+Here is the result of using my home-rolled injected formatter to format Clojure nested inside Markdown, nested inside
+Clojure. Isn't that pretty sweet.
+
+````clojure nolinenumbers="true" query="docstrings"
+(defn func-a
+  "this is some
+   content
+
+   - list 1
+    - list 2
+   - list 2
+     - list 2
+
+   ```clojure
+   (def    a     1   )
+   ```
+   "
+  [])
+
+;; After format
+
+(defn func-a
+  "this is some content
+
+   - list 1
+   - list 2
+   - list 2
+     - list 2
+
+   ```clojure
+   (def a 1)
+   ```
+   "
+  [])
+````
+
+And you can use it too! (at your own risk). It has zero dependencies and can be dropped directly into your config,
+assuming you are using Neovim and conform.
+
+It works by recursively finding the injected regions inside the buffer being operated over, placing the content inside a
+new scratch buffer, and then re-running conform on said scratch buffer. This means it will re-use all your existing
+conform formatter config for formatting the injected languages.
+
+Honestly, it's pretty buggy. It's only really cool as a prototype to demonstrate what _could_ be, but it does handle
+indentation correctly as well as nested injections. I use it to varying degrees of satisfaction in my day-to-day.
+
+---
+
+What I _actually_ want is a standalone (independent of Neovim) binary that can shell out to other formatters to handle
+injected regions. Similar conceptually to conform, where you configure third-party formatters for different languages,
+but runnable independently.
+
+This would be editor agnostic, and can run against your code-base on CI.
+
+There does exist a treesitter powered formatter called [Topiary](https://github.com/tweag/topiary), which looks pretty
+cool, but this doesn't leverage the pretty extensive formatter ecosystem that already exists.
+
+I started building something like this which I'll publish if it proves to be fruitful.
+
+### Parting Comments
+
+1. Treesitter grammars are pretty easy to generate with AI. If you ever find yourself working with some arcane language
+   that has no grammars - just take a snippet of the syntax and ask an LLM to generate you a grammar file. It's pretty
+   effective.
+
+   The grammar I [linked at the beginning](https://github.com/julienvincent/tree-sitter-numscript), for example, was
+   made during a period where I was using a lot of
+   [Numscript](https://docs.formance.com/modules/numscript/specs-format#numscript-specs-format). It took me maybe 30
+   minutes to have a grammar working for this niche syntax.
+
+2. If you were keen-eyed and were wondering how I rendered all these code blocks with injected-queries on the web, you
+   can read about how I got this working [over on this other post](/posts/treesitter-code-blocks).
+
+   Spoiler: All the code-blocks in this site are powered by a home-rolled treesitter highlighter/compiler rehype plugin!
