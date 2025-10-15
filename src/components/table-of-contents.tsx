@@ -60,6 +60,10 @@ export default function TableOfContents(props: Props) {
   const route = findRoute(router, props.routeId);
   const all_children = route ? useChildren(router, route) : [];
   const children = all_children.filter((child) => {
+    if (child.options.staticData?.meta?.hidden) {
+      return false;
+    }
+
     if (props.filter_prefix) {
       if (
         !(
@@ -88,20 +92,18 @@ export default function TableOfContents(props: Props) {
     if (!meta_a?.date || !meta_b?.date) {
       return 0;
     }
-    return new Date(meta_b.date).getTime() - new Date(meta_b.date).getTime();
+    return new Date(meta_b.date).getTime() - new Date(meta_a.date).getTime();
   });
 
   return (
-    <>
+    <Ul>
       {children.map((child) => {
         return (
-          <Ul key={child.id}>
-            <li>
-              <RouteEntry route={child}></RouteEntry>
-            </li>
-          </Ul>
+          <li key={child.id}>
+            <RouteEntry route={child}></RouteEntry>
+          </li>
         );
       })}
-    </>
+    </Ul>
   );
 }

@@ -6,8 +6,7 @@ export const Route = createFileRoute('/posts/')({
   component: () => {
     return (
       <>
-        <H1>Index</H1>
-
+        <H1>Posts</H1>
         <TableOfContents routeId="/posts/" />
       </>
     );

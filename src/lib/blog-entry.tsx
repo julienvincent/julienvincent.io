@@ -8,6 +8,7 @@ type Props = {
   Component: Component | React.LazyExoticComponent<Component>;
   title: string;
   date: string;
+  hidden?: boolean;
 };
 export function createBlogRoute(props: Props) {
   return {
@@ -16,6 +17,7 @@ export function createBlogRoute(props: Props) {
         type: 'post',
         title: props.title,
         date: props.date,
+        hidden: props.hidden,
       } as RouteMetadata,
     },
     component: () => {

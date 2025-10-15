@@ -17,6 +17,7 @@
   --color-code-fg-0: #e2cca9;
   --color-code-fg-1: #e2cca9;
   --color-code-fg-2: #d5c4a1;
+  --color-code-fg-muted: oklch(0.5505 0.0234 62.5672);
   --color-code-grey-0: #7c6f64;
   --color-code-grey-1: #928374;
   --color-code-grey-2: #a89984;

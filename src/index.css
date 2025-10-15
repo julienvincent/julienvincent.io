@@ -75,6 +75,7 @@
   --color-destructive-foreground: var(--destructive-foreground);
   --color-code-background: var(--color-code-bg-0);
   --color-code-foreground: var(--color-code-fg-0);
+  --color-code-foreground-muted: var(--color-code-fg-muted);
 }
 
 :root {

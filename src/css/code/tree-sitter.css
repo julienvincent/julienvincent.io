@@ -24,7 +24,7 @@ pre code.tree-sitter {
 
 .tree-sitter::selection,
 .tree-sitter ::selection {
-  background-color: var(--color-code-bg-3);
+  background-color: var(--color-code-fg-muted);
 }
 
 .tree-sitter .code-line {
@@ -49,7 +49,7 @@ pre code.tree-sitter {
   margin-left: -8px;
   margin-right: 24px;
   width: 1rem;
-  color: var(--color-code-foreground);
+  color: var(--color-code-fg-muted);
   text-align: right;
 
   display: inline-block;

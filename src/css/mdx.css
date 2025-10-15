@@ -1,0 +1,8 @@
+ul.mdx li::before {
+  content: '■';
+  position: absolute;
+  margin-left: -1.5rem;
+  margin-top: 0.2rem;
+  font-size: 11px;
+  color: var(--color-muted-foreground);
+}

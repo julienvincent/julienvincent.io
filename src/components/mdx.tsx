@@ -34,7 +34,40 @@ export function H6(props: ComponentProps<'h1'>) {
 }
 
 export function Ul(props: ComponentProps<'ul'>) {
-  return <ul {...props} className="my-6 ml-6 list-disc [&>li]:mt-2" />;
+  return (
+    <ul
+      {...props}
+      className={cn(
+        'mdx',
+        'mb-10 pl-10',
+        '[&>li]:mt-1 [&>li]:mb-3',
+        '[&>li>*]:ml-0 [&>li>*]:pl-0 [&>li>*]:mb-3',
+        props.className,
+      )}
+    />
+  );
+}
+
+export function Ol(props: ComponentProps<'ol'>) {
+  return (
+    <ol
+      {...props}
+      className={cn(
+        'mb-10 ml-8 list-decimal list-outside',
+        '[&>li]:mt-1 [&>li]:mb-5 marker:text-muted-foreground',
+        '[&>li>p]:mb-3 [&>li>p]:ml-2',
+        props.className,
+      )}
+    />
+  );
+}
+
+export function Li(props: ComponentProps<'li'>) {
+  return <li {...props} />;
+}
+
+export function Hr(props: ComponentProps<'hr'>) {
+  return <hr {...props} className="border-1 mb-7 my-7" />;
 }
 
 export function P(props: ComponentProps<'p'>) {
@@ -50,6 +83,7 @@ export function Link(props: ComponentProps<'a'>) {
         'font-semibold underline decoration-2 underline-offset-2',
         'rounded-sm px-0.5',
         'hover:text-primary hover:decoration-primary',
+        'active:text-primary active:decoration-primary',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50',
         'selection:bg-accent selection:text-accent-foreground',
       )}
@@ -119,8 +153,11 @@ const components: MDXComponents = {
   h6: H6,
 
   ul: Ul,
+  ol: Ol,
+  li: Li,
 
   p: P,
+  hr: Hr,
 
   a: Link,
 
