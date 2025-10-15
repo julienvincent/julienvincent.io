@@ -12,9 +12,9 @@ const RootLayout = () => {
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <MDXProvider components={mdx_components}>
         <Header />
-        <Breadcrumbs />
 
         <main className="mx-auto max-w-4xl px-5">
+          <Breadcrumbs />
           <Outlet />
         </main>
       </MDXProvider>

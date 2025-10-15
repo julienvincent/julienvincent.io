@@ -20,7 +20,7 @@ function buildCrumbs(pathname: string): Crumb[] {
   for (const part of parts) {
     acc += `/${part}`;
     const label = toTitleCase(decodeURIComponent(part.replace(/-/g, ' ')));
-    crumbs.push({ label, href: acc });
+    crumbs.push({ label, href: `${acc}/` });
   }
   return crumbs;
 }
@@ -29,11 +29,13 @@ export function Breadcrumbs() {
   const { pathname } = useLocation();
   const crumbs = useMemo(() => buildCrumbs(pathname), [pathname]);
 
-  if (crumbs.length === 0) return null;
+  if (crumbs.length === 0) {
+    return null;
+  }
 
   return (
     <nav aria-label="Breadcrumb" className="bg-background/70">
-      <ol className="mx-auto flex max-w-5xl items-center gap-1 px-4 py-2 text-xs text-muted-foreground">
+      <ol className="mx-auto flex max-w-5xl gap-1 px-1 py-2 -mb-7 text-xs text-muted-foreground">
         <li>
           <Link to="/" className="hover:text-foreground">
             Home

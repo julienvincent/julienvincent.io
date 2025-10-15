@@ -1,14 +1,14 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { H1 } from '@/components/mdx.tsx';
-import TOC from '@/components/toc';
+import TableOfContents from '@/components/table-of-contents';
 
-export const Route = createFileRoute('/blog/')({
+export const Route = createFileRoute('/posts/')({
   component: () => {
     return (
       <>
         <H1>Index</H1>
 
-        <TOC routeId="/blog/" />
+        <TableOfContents routeId="/posts/" />
       </>
     );
   },

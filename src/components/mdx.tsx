@@ -4,6 +4,7 @@ import type { ComponentProps } from 'react';
 import { FileIcon } from 'lucide-react';
 import { Link as RouterLink } from '@tanstack/react-router';
 import * as date from 'date-fns';
+import TableOfContents from './table-of-contents';
 
 const header_class =
   'scroll-m-20 mt-10 mb-5 font-semibold tracking-tight font-mono text-accent';
@@ -105,7 +106,7 @@ const components: MDXComponents = {
   Date: (props: { date: string }) => {
     return (
       <p className="text-accent-secondary mt-5 mb-10 underline font-semibold underline-offset-5 decoration-dashed">
-        {date.format(new Date(props.date), 'dd MMMM Y')}
+        {date.format(new Date(props.date), 'dd MMMM y')}
       </p>
     );
   },
@@ -126,14 +127,7 @@ const components: MDXComponents = {
   code: Code,
   pre: Pre,
 
-  HtmlSnippet: (props) => {
-    return (
-      <object
-        {...props}
-        className={cn(props.className, 'mb-5 rounded-sm m-4 w-full')}
-      />
-    );
-  },
+  TableOfContents: TableOfContents,
 };
 
 export default components;
