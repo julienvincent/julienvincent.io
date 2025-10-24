@@ -33,6 +33,18 @@ export function H6(props: ComponentProps<'h1'>) {
   return <h6 {...props} className={cn(header_class, 'text-1xl')} />;
 }
 
+export function Blockquote(props: ComponentProps<'blockquote'>) {
+  return (
+    <blockquote
+      {...props}
+      style={{ borderStyle: 'solid' }}
+      className={cn(
+        'text-muted-foreground border-l-4 border-primary border-solid pl-4 ml-5',
+      )}
+    />
+  );
+}
+
 export function Ul(props: ComponentProps<'ul'>) {
   return (
     <ul
@@ -165,6 +177,8 @@ const components: MDXComponents = {
   pre: Pre,
 
   TableOfContents: TableOfContents,
+
+  blockquote: Blockquote,
 };
 
 export default components;

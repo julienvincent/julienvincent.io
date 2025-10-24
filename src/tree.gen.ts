@@ -16,6 +16,7 @@ import { Route as ProjectsIndexRouteImport } from './routes/projects/index'
 import { Route as PostsIndexRouteImport } from './routes/posts/index'
 import { Route as PostsTreesitterLanguageInjectionsRouteImport } from './routes/posts/treesitter-language-injections'
 import { Route as PostsTreesitterCodeBlocksRouteImport } from './routes/posts/treesitter-code-blocks'
+import { Route as ProjectsCartographerIndexRouteImport } from './routes/projects/cartographer/index'
 
 const ProjectsRoute = ProjectsRouteImport.update({
   id: '/projects',
@@ -54,6 +55,12 @@ const PostsTreesitterCodeBlocksRoute =
     path: '/treesitter-code-blocks',
     getParentRoute: () => PostsRoute,
   } as any)
+const ProjectsCartographerIndexRoute =
+  ProjectsCartographerIndexRouteImport.update({
+    id: '/cartographer/',
+    path: '/cartographer/',
+    getParentRoute: () => ProjectsRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -63,6 +70,7 @@ export interface FileRoutesByFullPath {
   '/posts/treesitter-language-injections': typeof PostsTreesitterLanguageInjectionsRoute
   '/posts/': typeof PostsIndexRoute
   '/projects/': typeof ProjectsIndexRoute
+  '/projects/cartographer': typeof ProjectsCartographerIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -70,6 +78,7 @@ export interface FileRoutesByTo {
   '/posts/treesitter-language-injections': typeof PostsTreesitterLanguageInjectionsRoute
   '/posts': typeof PostsIndexRoute
   '/projects': typeof ProjectsIndexRoute
+  '/projects/cartographer': typeof ProjectsCartographerIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -80,6 +89,7 @@ export interface FileRoutesById {
   '/posts/treesitter-language-injections': typeof PostsTreesitterLanguageInjectionsRoute
   '/posts/': typeof PostsIndexRoute
   '/projects/': typeof ProjectsIndexRoute
+  '/projects/cartographer/': typeof ProjectsCartographerIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -91,6 +101,7 @@ export interface FileRouteTypes {
     | '/posts/treesitter-language-injections'
     | '/posts/'
     | '/projects/'
+    | '/projects/cartographer'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -98,6 +109,7 @@ export interface FileRouteTypes {
     | '/posts/treesitter-language-injections'
     | '/posts'
     | '/projects'
+    | '/projects/cartographer'
   id:
     | '__root__'
     | '/'
@@ -107,6 +119,7 @@ export interface FileRouteTypes {
     | '/posts/treesitter-language-injections'
     | '/posts/'
     | '/projects/'
+    | '/projects/cartographer/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -166,6 +179,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PostsTreesitterCodeBlocksRouteImport
       parentRoute: typeof PostsRoute
     }
+    '/projects/cartographer/': {
+      id: '/projects/cartographer/'
+      path: '/cartographer'
+      fullPath: '/projects/cartographer'
+      preLoaderRoute: typeof ProjectsCartographerIndexRouteImport
+      parentRoute: typeof ProjectsRoute
+    }
   }
 }
 
@@ -186,10 +206,12 @@ const PostsRouteWithChildren = PostsRoute._addFileChildren(PostsRouteChildren)
 
 interface ProjectsRouteChildren {
   ProjectsIndexRoute: typeof ProjectsIndexRoute
+  ProjectsCartographerIndexRoute: typeof ProjectsCartographerIndexRoute
 }
 
 const ProjectsRouteChildren: ProjectsRouteChildren = {
   ProjectsIndexRoute: ProjectsIndexRoute,
+  ProjectsCartographerIndexRoute: ProjectsCartographerIndexRoute,
 }
 
 const ProjectsRouteWithChildren = ProjectsRoute._addFileChildren(
