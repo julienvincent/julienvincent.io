@@ -1,0 +1,94 @@
+# {props.title}
+
+{/* ![image](/cropped.webp) */}
+
+<Carousel
+  ratio={16 / 9}
+  images={[
+    {
+      src: 'https://site.public.garage.julienvincent.io/fume-extractor/0.webp',
+      grayscale: true,
+    },
+    {
+      src: 'https://site.public.garage.julienvincent.io/fume-extractor/landscape.webp',
+    },
+    {
+      src: 'https://site.public.garage.julienvincent.io/fume-extractor/1.webp',
+    },
+    {
+      src: 'https://site.public.garage.julienvincent.io/fume-extractor/2.webp',
+    },
+    {
+      src: 'https://site.public.garage.julienvincent.io/fume-extractor/3.webp',
+    },
+  ]}
+/>
+
+I do a lot of soldering and up until this point I had just been happily consuming all the toxic smoke produced as a
+result. I do have a large sliding door next to my workstation which can provide good ventilation, but it's not good
+enough.
+
+I did a bit of research and found that a very common solution is to slap an
+[activated carbon filter](https://www.amazon.co.uk/dp/B004OCSCO6?ref=ppx_yo2ov_dt_b_fed_asin_title) in front of a PC fan
+and call it a day. Looking at some existing projects and YouTube videos showed this to be seemingly more effective than
+it sounds.
+
+---
+
+I wanted to make this thing myself, but I did look at some reference versions I found on Printables. There are
+[a _lot_ of them](https://www.printables.com/search/models?q=fume+extractor) but here are some of the ones I liked best
+
+1. [https://www.printables.com/model/84614-heavy-duty-battery-powered-solder-fume-extractor](https://www.printables.com/model/84614-heavy-duty-battery-powered-solder-fume-extractor)
+2. [https://www.printables.com/model/643501-soldering-fume-extractor](https://www.printables.com/model/643501-soldering-fume-extractor)
+3. [https://www.printables.com/model/811245-adjustable-solder-fume-extractor](https://www.printables.com/model/811245-adjustable-solder-fume-extractor)
+
+I liked the tilted stand from the first one, but the overall design felt far too blocky for my liking. The second one
+there has a much 'thinner' feel to it, especially the frame around the fan.
+
+Most of them seemed to involve some kind of speed control, which to me seems a bit pointless. I'm pretty sure I would
+always want to run this at maximum speed all the time. We can swap out the rotary knob with a simple toggle switch
+instead.
+
+For the fan selection the [Noctua NF-A14 iPPC-3000](https://www.noctua.at/en/products/nf-a14-industrialppc-3000-pwm)
+seems to be a resounding winner in the space. Low noise, high power and good quality. I went with the 140mm version, but
+there is also a [120mm version](https://www.noctua.at/en/products/nf-f12-industrialppc-3000-pwm) for a smaller profile.
+
+Most of the existing designs I could find all went with a single carbon filter on the front. Personally I'd rather slap
+on one on either side of the fan to maximise my chance of absorbing all the fumes. This would come at the cost of a
+little suction power but I am running with a pretty powerful fan, so it should be fine.
+
+As I linked above, I went with two of these
+[Hakko A1001 filters](https://www.amazon.co.uk/dp/B004OCSCO6?ref=ppx_yo2ov_dt_b_fed_asin_title) which are actually
+replacements for Hakko's own fume extractor. That's a good sign I suppose.
+
+---
+
+I fired up OnShape and mocked up something I liked, printed it out, and after a few tolerance tweaks I have a
+functioning fume extractor!
+
+It honestly works _way_ better than I was expecting. I don't have an air quality sensor on hand so I can't really give
+any scientific measurements, but there are no visible fumes leaving the back and I can't really smell any change before
+and after using my iron.
+
+If you want to make this yourself you can find my design here:
+
+[https://cad.onshape.com/documents/2fb06204160c59cd7b8f0e5d/w/570986edeaeb5c11a8f6e42f/e/778cc3502fddae1433d01ad7](https://cad.onshape.com/documents/2fb06204160c59cd7b8f0e5d/w/570986edeaeb5c11a8f6e42f/e/778cc3502fddae1433d01ad7)
+
+### Power Source
+
+I do want to power this thing from batteries at some point, but I didn't have anything appropriate on hand so decided to
+go with a cabled design for now. I had some 12v power adapters lying around as well as a few DC barrel jacks, so I don't
+need to purchase anything special here.
+
+<Image src="https://site.public.garage.julienvincent.io/fume-extractor/landscape-behind.webp" ratio={16 / 9} />
+
+This approach works just fine - but having used this for several months I can say the cable is _absolutely annoying_.
+When you're soldering stuff you're often working at weird and awkward angles. The cable somehow gets caught on
+everything, including the soldering irons power line.
+
+In the meantime I have ordered some [NCR18650B](https://www.aliexpress.com/item/32324914059.html) LiPo cells and will
+revisit this when I get some motivation.
+
+I really like how thin the base is and I want to avoid making it thicker just to squeeze in the battery cells plus the
+electronics to charge and consume them. I'm guessing I will need to design a custom PCB for this project in order to
+keep everything sufficiently compact.

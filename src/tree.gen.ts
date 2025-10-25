@@ -16,6 +16,7 @@ import { Route as ProjectsIndexRouteImport } from './routes/projects/index'
 import { Route as PostsIndexRouteImport } from './routes/posts/index'
 import { Route as PostsTreesitterLanguageInjectionsRouteImport } from './routes/posts/treesitter-language-injections'
 import { Route as PostsTreesitterCodeBlocksRouteImport } from './routes/posts/treesitter-code-blocks'
+import { Route as ProjectsFumeExtractorIndexRouteImport } from './routes/projects/fume-extractor/index'
 import { Route as ProjectsCartographerIndexRouteImport } from './routes/projects/cartographer/index'
 
 const ProjectsRoute = ProjectsRouteImport.update({
@@ -55,6 +56,12 @@ const PostsTreesitterCodeBlocksRoute =
     path: '/treesitter-code-blocks',
     getParentRoute: () => PostsRoute,
   } as any)
+const ProjectsFumeExtractorIndexRoute =
+  ProjectsFumeExtractorIndexRouteImport.update({
+    id: '/fume-extractor/',
+    path: '/fume-extractor/',
+    getParentRoute: () => ProjectsRoute,
+  } as any)
 const ProjectsCartographerIndexRoute =
   ProjectsCartographerIndexRouteImport.update({
     id: '/cartographer/',
@@ -71,6 +78,7 @@ export interface FileRoutesByFullPath {
   '/posts/': typeof PostsIndexRoute
   '/projects/': typeof ProjectsIndexRoute
   '/projects/cartographer': typeof ProjectsCartographerIndexRoute
+  '/projects/fume-extractor': typeof ProjectsFumeExtractorIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -79,6 +87,7 @@ export interface FileRoutesByTo {
   '/posts': typeof PostsIndexRoute
   '/projects': typeof ProjectsIndexRoute
   '/projects/cartographer': typeof ProjectsCartographerIndexRoute
+  '/projects/fume-extractor': typeof ProjectsFumeExtractorIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -90,6 +99,7 @@ export interface FileRoutesById {
   '/posts/': typeof PostsIndexRoute
   '/projects/': typeof ProjectsIndexRoute
   '/projects/cartographer/': typeof ProjectsCartographerIndexRoute
+  '/projects/fume-extractor/': typeof ProjectsFumeExtractorIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -102,6 +112,7 @@ export interface FileRouteTypes {
     | '/posts/'
     | '/projects/'
     | '/projects/cartographer'
+    | '/projects/fume-extractor'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -110,6 +121,7 @@ export interface FileRouteTypes {
     | '/posts'
     | '/projects'
     | '/projects/cartographer'
+    | '/projects/fume-extractor'
   id:
     | '__root__'
     | '/'
@@ -120,6 +132,7 @@ export interface FileRouteTypes {
     | '/posts/'
     | '/projects/'
     | '/projects/cartographer/'
+    | '/projects/fume-extractor/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -179,6 +192,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PostsTreesitterCodeBlocksRouteImport
       parentRoute: typeof PostsRoute
     }
+    '/projects/fume-extractor/': {
+      id: '/projects/fume-extractor/'
+      path: '/fume-extractor'
+      fullPath: '/projects/fume-extractor'
+      preLoaderRoute: typeof ProjectsFumeExtractorIndexRouteImport
+      parentRoute: typeof ProjectsRoute
+    }
     '/projects/cartographer/': {
       id: '/projects/cartographer/'
       path: '/cartographer'
@@ -207,11 +227,13 @@ const PostsRouteWithChildren = PostsRoute._addFileChildren(PostsRouteChildren)
 interface ProjectsRouteChildren {
   ProjectsIndexRoute: typeof ProjectsIndexRoute
   ProjectsCartographerIndexRoute: typeof ProjectsCartographerIndexRoute
+  ProjectsFumeExtractorIndexRoute: typeof ProjectsFumeExtractorIndexRoute
 }
 
 const ProjectsRouteChildren: ProjectsRouteChildren = {
   ProjectsIndexRoute: ProjectsIndexRoute,
   ProjectsCartographerIndexRoute: ProjectsCartographerIndexRoute,
+  ProjectsFumeExtractorIndexRoute: ProjectsFumeExtractorIndexRoute,
 }
 
 const ProjectsRouteWithChildren = ProjectsRoute._addFileChildren(

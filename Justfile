@@ -10,8 +10,8 @@ build:
 preview:
     pnpm vite preview
 
-deploy:
-    cd deployment && pulumi up --stack julienvincent/root
+deploy *args:
+    cd deployment && pulumi up --stack julienvincent/root {{args}}
 
 prepare:
     #!/bin/sh
