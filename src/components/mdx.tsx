@@ -5,6 +5,8 @@ import { FileIcon } from 'lucide-react';
 import { Link as RouterLink } from '@tanstack/react-router';
 import * as date from 'date-fns';
 import TableOfContents from './table-of-contents';
+import Carousel from './mdx/carousel.tsx';
+import { AspectRatio } from '@radix-ui/react-aspect-ratio';
 
 const header_class =
   'scroll-m-20 mt-10 mb-5 font-semibold tracking-tight font-mono text-accent';
@@ -98,6 +100,7 @@ export function Link(props: ComponentProps<'a'>) {
         'active:text-primary active:decoration-primary',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50',
         'selection:bg-accent selection:text-accent-foreground',
+        'wrap-break-word',
       )}
     />
   );
@@ -148,6 +151,38 @@ export function Code(props: ComponentProps<'code'>) {
   );
 }
 
+export function Img(props: ComponentProps<'img'>) {
+  return (
+    <img
+      {...props}
+      style={{ borderStyle: 'solid' }}
+      className={cn(props.className, 'mb-10 mt-10 rounded-md border-2')}
+    />
+  );
+}
+
+export function Image(
+  props: ComponentProps<'img'> & { ratio?: number; grayscale?: boolean },
+) {
+  return (
+    <div className="mb-10 mt-10">
+      <AspectRatio
+        ratio={props.ratio ?? 1}
+        className={cn('bg-muted rounded-lg')}
+      >
+        <img
+          src={props.src}
+          className={cn(
+            'h-full w-full rounded-md object-cover',
+            props.className,
+            props.grayscale ? 'grayscale' : '',
+          )}
+        />
+      </AspectRatio>
+    </div>
+  );
+}
+
 const components: MDXComponents = {
   Date: (props: { date: string }) => {
     return (
@@ -172,6 +207,11 @@ const components: MDXComponents = {
   hr: Hr,
 
   a: Link,
+
+  img: Img,
+  Image: Image,
+
+  Carousel: Carousel,
 
   code: Code,
   pre: Pre,
