@@ -10,15 +10,43 @@ import { DotButton, useDotButton } from './dot-button';
 import React from 'react';
 import { cn } from '@/lib/utils';
 
-type Image = {
+type ImageProps = {
   src: string;
   className?: string;
   grayscale?: boolean;
 };
 
+type LazyImageProps = ImageProps & {
+  shouldLoad?: boolean;
+};
+function LazyImage(props: LazyImageProps) {
+  const [has_loaded, setHasLoaded] = React.useState(false);
+
+  React.useEffect(() => {
+    if (props.shouldLoad && !has_loaded) {
+      setHasLoaded(true);
+    }
+  }, [props.shouldLoad]);
+
+  if (!has_loaded) {
+    return null;
+  }
+
+  return (
+    <img
+      src={props.src}
+      className={cn(
+        'h-full w-full rounded-md object-cover',
+        props.className,
+        props.grayscale ? 'grayscale' : '',
+      )}
+    />
+  );
+}
+
 type Props = {
   ratio: number;
-  images: Image[];
+  images: ImageProps[];
 };
 export default function MdxCarousel(props: Props) {
   const [api, setApi] = React.useState<CarouselApi>(undefined);
@@ -30,19 +58,16 @@ export default function MdxCarousel(props: Props) {
       <CarouselContent>
         {props.images.map((image, i) => {
           return (
-            <CarouselItem>
+            <CarouselItem key={i}>
               <AspectRatio
                 ratio={props.ratio}
-                key={i}
                 className={cn('bg-muted rounded-lg')}
               >
-                <img
+                <LazyImage
                   src={image.src}
-                  className={cn(
-                    'h-full w-full rounded-md object-cover',
-                    image.className,
-                    image.grayscale ? 'grayscale' : '',
-                  )}
+                  className={image.className}
+                  grayscale={image.grayscale}
+                  shouldLoad={i <= selected_index + 1}
                 />
               </AspectRatio>
             </CarouselItem>
