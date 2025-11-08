@@ -11,11 +11,11 @@ preview:
     pnpm vite preview
 
 deploy *args:
-    cd deployment && pulumi up --stack julienvincent/root {{args}}
+    cd deployment && pulumi up --stack julienvincent/root {{ args }}
 
 prepare:
     #!/bin/sh
-  
+
     set -e pipefail
 
     rm -rf .tree-sitter
@@ -37,3 +37,4 @@ prepare:
     git clone https://github.com/tree-sitter-grammars/tree-sitter-lua --revision d76023017f7485eae629cb60d406c7a1ca0f40c9 --depth 1 .tree-sitter/grammars/lua
     git clone https://github.com/tree-sitter/tree-sitter-bash --revision a06c2e4415e9bc0346c6b86d401879ffb44058f7 --depth 1 .tree-sitter/grammars/bash
     git clone https://github.com/ram02z/tree-sitter-fish --revision aa074a0bacde8b5823c592574d7138f156a95776 --depth 1 .tree-sitter/grammars/fish
+    git clone https://github.com/tree-sitter/tree-sitter-rust --revision 261b20226c04ef601adbdf185a800512a5f66291 --depth 1 .tree-sitter/grammars/rust
