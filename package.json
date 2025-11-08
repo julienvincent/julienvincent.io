@@ -18,6 +18,7 @@
     "lucide-react": "^0.546.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "recharts": "2.15.4",
     "rehype-highlight-code-lines": "^1.2.0",
     "rehype-mdx-code-props": "^3.0.1",
     "tailwind-merge": "^3.3.1"

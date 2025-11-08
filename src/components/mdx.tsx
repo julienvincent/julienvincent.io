@@ -6,6 +6,7 @@ import { Link as RouterLink, useLocation } from '@tanstack/react-router';
 import * as date from 'date-fns';
 import TableOfContents from './table-of-contents';
 import Carousel from './mdx/carousel.tsx';
+import { MetricChart } from './mdx/metric-chart.tsx';
 import { AspectRatio } from '@radix-ui/react-aspect-ratio';
 import React from 'react';
 
@@ -292,6 +293,8 @@ const components: MDXComponents = {
   Image: Image,
 
   Carousel: Carousel,
+
+  MetricChart,
 
   code: Code,
   pre: Pre,
