@@ -24,7 +24,14 @@ export function Anchor(
       return;
     }
 
-    return props.children.toLowerCase().split(' ').join('-');
+    return props.children
+      .toLowerCase()
+      .split(' ')
+      .map((part) => {
+        return part.replaceAll(/[^a-z0-9\s]/g, '');
+      })
+      .filter((item) => item !== '')
+      .join('-');
   }, [props.children]);
 
   if (props.anchor ?? (true && hash)) {
