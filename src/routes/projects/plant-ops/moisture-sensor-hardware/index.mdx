@@ -1,0 +1,531 @@
+<Carousel
+  ratio={16 / 10}
+  images={[
+    {
+      src: 'https://site.public.garage.julienvincent.io/moisture-sensor/cover-1.webp',
+      grayscale: true,
+    },
+    {
+      src: 'https://site.public.garage.julienvincent.io/moisture-sensor/cover-2.webp',
+    },
+    {
+      src: 'https://site.public.garage.julienvincent.io/moisture-sensor/cover-3-close-up.webp',
+    },
+    {
+      src: 'https://site.public.garage.julienvincent.io/moisture-sensor/rev-3-assembled.webp',
+    },
+  ]}
+/>
+
+<br />
+
+This is a wireless, ultra-low power, battery powered module for measuring the moisture content of soil in a planter.
+
+I have written up this build-log to document the overall design and how I went about making it. This is a
+hardware-focused post and won't cover any of the software involved, however I do plan to write a follow on post in the
+future to cover that too.
+
+### prequel
+
+I've gone through several attempts at building some indoor planter automations which have all died as semi-working
+prototypes. All of these earlier attempts revolved around an all-in-one battery-powered module that can both monitor the
+plant and dispense water from a built-in reservoir as needed.
+
+I really liked the idea of a self-contained, re-usable module that I can build for each plant. Practically speaking,
+this approach didn't turn out to be the right way to go about it. There are several problems with the idea, but
+primarily the system is just trying to do too much and has too many independent problems that need to be solved and
+tested for it to be usable.
+
+This is a side-project, not my day job, and I just don't have enough time to tackle all of this in one go. It needed to
+be broken up into smaller, individually solvable components that can incrementally provide value.
+
+I decided to tackle monitoring first. That would allow me to gather useful data that I can use to make my own watering
+and plant care decisions, and it helps to inform the design of future components.
+
+### the plan
+
+Build an as-small-as-possible, battery-powered, moisture-content monitoring probe that I can stick into each and any of
+my plants to remotely gather data about how they are doing.
+
+I want it to be
+
+1. Small, inconspicuous
+2. Last multiple months/years on a single charge. So ultra low power
+3. Provide a meaningful signal over the planters full wet/dry range
+4. Cheap and simple enough to assemble that it's practical to make one for each plant.
+
+I went into this knowing very little about moisture sensors and spent a lot of time researching different approaches.
+There are lots and I don't intend to go over them all here, but the general consensus for a great, low-cost method is to
+use a capacitive sensing probe.
+
+This is primarily due to its inherent resistance to corrosion which results in a longer lasting probe whose signal
+doesn't drift much over time. As there are no metal electrodes exposed to moisture (as some other methods use), there is
+very little opportunity for oxidation and the probe should last a fairly long time.
+
+---
+
+There is a popular module floating around called the
+[capacitive soil moisture sensor v1.2](https://thepihut.com/products/capacitive-soil-moisture-sensor) (very imaginative,
+I know) which is sold all over the place. In fact I already had several of these lying around from earlier attempts at
+plant care automations and therefore this was an obvious starting point for me.
+
+### revision 1
+
+The capacitive probe is driven from a 5v supply as input and outputs an analog voltage signal which changes according to
+the dielectric surrounding the probe. When placed in water, the output analog voltage will drop. When surrounded by only
+air, it will rise.
+
+Ultimately this makes what we need to do quite simple:
+
+Wire up a wifi-capable microcontroller to read the probes output signal using an ADC-capable IO pin. Then wirelessly
+broadcast the reading to some nearby, reachable server.
+
+We want this to be battery powered - so we also need a way to hook up a LiPo cell, normalise the voltage for the MCU and
+the probe, and charge the battery from a USBC port.
+
+We only need to take readings every now and then (soil takes a long time to dry, after all), therefore we should aim to
+spend the rest of the time in an idle (deep-sleep) state. It will be important to be conscious of the quiescent current
+draw from components I pick, and I need to design the circuitry to consume as little power while idle as possible.
+
+My initial prototype took the form of a PCB which could mount just above the probe, interfacing the with the exposed
+header-pins. This required removing the pre-existing JST connector that the probe comes with in order to gain access to
+the pins.
+
+I kept everything within the same dimensions of the probe head, excepting for the USBC connector and MCU antenna. The
+battery would then mount at the back of the probe and wire up around the side into the main PCB.
+
+<Carousel
+  ratio={3 / 2}
+  images={[
+    {
+      src: 'https://site.public.garage.julienvincent.io/moisture-sensor/rev-1-close-up.webp',
+      description: 'A very dirty close-up of the assembled pcb',
+    },
+    {
+      src: 'https://site.public.garage.julienvincent.io/moisture-sensor/rev-1-side-view.webp',
+      description: 'Side-view showing just how thick these turned out',
+    },
+  ]}
+/>
+
+There are 4 primary subcircuits to this design:
+
+1. An [ESP32-C3-MINI-1-H4X module](https://documentation.espressif.com/esp32-c3-mini-1_datasheet_en.pdf) and surrounding
+   peripherals. I love this versatile little MCU and use it as the center-piece for almost all of my electronics
+   projects.
+1. A Lipo charge controller built around the [MCP73832](https://www.microchip.com/en-us/product/MCP73832) IC from
+   microchip.
+1. A 3v3 LDO power-supply to support the MCU, built around the
+   [NCP718](https://www.onsemi.com/products/power-management/linear-regulators-ldo/ncp718) - a really nice ultra-low
+   power LDO.
+1. A 5v switching power-supply to drive the probe, built around the
+   [TPS61222](https://www.ti.com/product/TPS61222/part-details/TPS61222DCKR) from Texas Instruments.
+
+It was exceedingly annoying that I needed to pack 2 separate power-supplies onto this board just to integrate with this
+off-the-shelf probe. The probe is advertised to operate at 5v, but I did do some prior testing to see if I could just
+run it off of 3v3. That was a definitive "no".
+
+The 5v switching supply sported pretty high idle power-consumption, but I got around that using a FET as an on-off
+switch. In software, I could then turn on or off the power to the probe in order to conserve power while idling. Still
+accounting for this voltage mismatch, I also needed to include a voltage divider at the probe output - our MCU ADC
+cannot take readings above 3.3V and trying to do so might damage the pin.
+
+I also hacked up a clunky 3D printed enclosure to finish it off, but unfortunately I did not take any photos of the
+completed end-result. For better, I think. It was really ugly.
+
+---
+
+It kind of worked.. I was able to get some sort of signal out of it, closely accompanied by a discordant quantity of
+noise. The overall output signal range was sadly only around `250mV` peak to peak.
+
+Now a **200mV** output range from a **5V input** is _really_ not good, representing only a measly **5%** slice of the
+full input signal. This ultimately meant that it was highly susceptible to any kind of disturbances, with even the
+smallest of knocks shifting the readings by more than its entire recording range.
+
+Here is a sample of the data recorded from a small bassil plant I had it placed in during its testing period. I've
+annotated the dataset with timestamps marking when I actually watered the plant. It would have been fairly hard to infer
+that from just the raw signal alone.
+
+<MetricChart source="https://site.public.garage.julienvincent.io/moisture-sensor/data-1.json" references={['watered']} />
+
+From this you can see just how noisy the output signal really is, barely better than a random-walk algorithm. A lot of
+the larger spikes are just from slight disturbances of the plant, for example giving it a small accidental bump or
+picking it up to water.
+
+This data, while interesting, is not suitable at all. It would not be possible to build a reliable automation that can
+make plant health and watering decisions based on this signal. As a human I could, _maybe_, deduce if the plant needed
+to be watered but it's certainly not clear enough to program against without significant cleaning up.
+
+Another property I did not like was the overall size of the final assembly. It's effectively two PCB's sandwiched around
+a header pin connector, and for such a small device the chonk really stands out.
+
+### revision 2
+
+While playing with this first prototype I wondered if I could do away with the generic probe all together. Its circuitry
+didn't look all that complicated, consisting almost entirely of analog components and some internal PCB traces to form
+the actual sensing probe. Surely it could be reverse engineered and embedded into a single self-contained assembly?
+
+This would offer some significant advantages over my original approach
+
+I could design it to operate at my 3.3V logic level, allowing me to completely ditch the dedicated 5V power supply
+circuitry and all its peripherals. That alone would significantly simplify the design and reduce overall power
+consumption. Probably that could improve the accuracy of ADC readings by removing the need for a voltage divider at the
+probe output.
+
+Doing this I would be able to minimise the thickness of the module, making it smaller and less noticeable when placed in
+a plant.
+
+And lastly the overall cost to produce a module would be noticeably reduced. I would only need to pay for PCB
+fabrication (which I am paying for anyway) and raw components (which would be cheaper than the probe).
+
+This does require me to now understand how to design this capacitive probe, so time to do some more research!
+
+##### capacitive probes 101
+
+Luckily for me there is a ton of information on the topic. Other people have also already done the work of analyzing
+this exact probe and documenting the internals. Here are a couple of rich resources I used as reference during this
+project:
+
+- https://thecavepearlproject.org/2017/08/12/measuring-electrical-conductivity-with-an-arduino-part1-overview/
+
+  A comprehensive breakdown on how capacitive moisture sensor circuitry works in general.
+
+- https://thecavepearlproject.org/2020/10/27/hacking-a-capacitive-soil-moisture-sensor-for-frequency-output/
+
+  A great breakdown of the probe I have, along with a bunch of really useful references on the topic of soil moisture
+  monitoring.
+
+I will give you a brief summary so you can follow along during the rest of the post, but if you want a better
+understanding then I recommend you read some of the above.
+
+At the core is a pulse generator, built around a [555 timer](https://en.wikipedia.org/wiki/555_timer_IC), which feeds a
+square wave signal into the probe plates.
+
+The probe, acting as a (very tiny) capacitor, charges towards the supply voltage while the signal is high. The time it
+takes to charge is based on the [RC Time Constant](https://en.wikipedia.org/wiki/RC_time_constant) and is proportional
+to the dielectric - or the soil in this case - surrounding the probe.
+
+A peak-detector circuit is then used to 'capture' the maximum voltage reached by the probe. This is the voltage the
+probe managed to reach while charging before the signal was inverted. The peak-detector uses a diode feeding into a
+capacitor to record the peak without discharging back into the probe.
+
+---
+
+Armed with this new understanding I started working on a second revision based around the
+[TLC555](https://www.ti.com/product/TLC555) timer from Texas Instruments. This IC is capable of operating at frequencies
+of **2Mhz** and can work with a minimum supply voltage of just **2V** making it a perfect choice for my 3.3V operated
+design.
+
+**Side Note:** The operating frequency is interesting here as salinity and dissolved solids affect the moisture readings
+until you reach significantly higher frequencies (20Mhz+, according to some sources). Now, we are way below that, but I
+was curious to know if varying the frequency by several hundred Khz would have any noticeable effect on the readings. I
+was therefore interested in having a pulse generator capable of higher frequencies to facilitate some room for
+experimentation. I later found a better way to do this.
+
+I used the original capacitive probe as a dimensional reference for my new probe copper outline, and the schema designs
+linked above as a reference for which peripheral components to pick for the pulse generator.
+
+Here you can see the probe schematic along with the resulting PCB design.
+
+<Carousel
+  ratio={1 / 0.4}
+  images={[
+    {
+      src: 'https://site.public.garage.julienvincent.io/moisture-sensor/rev-2-probe-schematic.webp',
+    },
+    {
+      src: 'https://site.public.garage.julienvincent.io/moisture-sensor/rev-2-pcb-3d.webp',
+    },
+  ]}
+/>
+
+#### assembly and testing
+
+The PCB's arrived, I assembled one, and.. it didn't really work. After spending some time with a scope I found the pulse
+generator circuitry was working (mostly) but the signal was being lost at the peak-detector diode **D31**. See the
+schematic above for reference.
+
+At a loss as to why, I eventually tried swapping out the diode with one scavenged from one of the off-the-shelf
+reference probes from revision 1. It didn't fit the PCB footprint, but with a bit of extra solder I got it placed OK.
+
+![These are some green boards from Aisler. I didn't like them and went back to JLCPCB for future
+orders](https://site.public.garage.julienvincent.io/moisture-sensor/rev-2-hotfix.webp)
+
+Following this patch the board started functioning more or less as designed. One noticeable exception being the
+frequency - producing only around **800Khz** instead of the intended **1.5Mhz**. This indicating the pulse generator
+circuitry needed some tuning, which to be honest is not really a big deal for this use-case. More on this later.
+
+So, what then was going on with the diode?
+
+As a hobbyist engineer I don't really have the expertise to answer this question confidently, but I will try to explain
+what I believe to be happening here as best I can.
+
+In my design I had decided to go with a schottky diode for the peak detector. To me it made sense to choose a diode with
+a low forward voltage drop to get as much range from the source signal as possible. To make matters worse, I ended up
+picking a power-class schottky diode - specifically the
+[RSX201VAM30](https://www.rohm.com/products/diodes/schottky-barrier-diodes/high-efficiency/rsx201vam30-product#productDetail) -
+because I had stock lying around from a previous project.
+
+There were two issues with this choice:
+
+1. Because this is a power-class diode its junction capacitance is probably very high, especially in comparison to the
+   relatively tiny capacitance of the probe itself (~**7pF**). This loads the probe signal, reducing the measurable
+   peak, and probably prevents or slows the probe from discharging.
+2. Schottky diodes have a small reverse leakage current which, while normally negligible, can be very significant when
+   compared against the tiny probe capacitance. This means the peak-detector storage capacitor drains backwards through
+   the diode, into the probe, preventing the probe from discharging during the off cycle.
+
+The salvaged diode I patched on is a [1N4148](https://en.wikipedia.org/wiki/1N4148_signal_diode) which is a small-signal
+diode sporting negligible reverse leakage current and negligible junction capacitance. Swapping this part out means we
+now have a functioning prototype!
+
+I ran it for a while to see how it performs, and I was very happy with the initial data. Here is a small annotated
+sample of about a month of usage.
+
+<MetricChart source="https://site.public.garage.julienvincent.io/moisture-sensor/data-2.json" references={['watered']} />
+
+What a nice, clean signal! This is sporting a **~850mV** peak-to-peak voltage range over the wet/dry cycle of the
+planter. That represents a **25%** slice of the 3.3V input signal, which is over **5x** better than the original probe
+prototype from the first revision!
+
+Yes, I know these measurements aren't super scientific.
+
+### unexpected signals
+
+While running some tests and scoping about I noticed that the probe produced a rather unexpected output waveform. The
+signal it was producing seemed to change about an axis offset from ground (half of our input signal peak), and was not
+changing linearly in response to the dielectric as I would have expected.
+
+On closer inspection this was clearly a result of how the probe discharged during the low of the square-wave input
+signal:
+
+- During the signal high the probe (acting as a capacitor) charges toward the supply.
+- During the signal low the probe discharges towards ground (through the dielectric, I assume), but not fast enough to
+  zero out.
+
+![Scope capture demonstrating the behaviour described above](https://site.public.garage.julienvincent.io/moisture-sensor/scope-pre-clamp.webp)
+
+I hadn't considered that the probe's discharge time would also be affected by the RC time constant, just as the charge
+time is. The very property the design is based off of is ruining the output! This is indirectly a result of the
+square-wave signal being in a high-z state when low, meaning it does not provide a fast discharge path to ground.
+
+This has a very significant effect on the probes measurements. The signal's relationship to moisture content becomes
+nonlinear, and when fully wet our total measurable signal range is reduced by half!
+
+Event the original pre-purchased probe I used in rev 1 suffers from this same problem, and this is definitely something
+I wanted to address in my next revision.
+
+##### dynamic signal clamping
+
+To solve this I needed to build in an explicit discharge path for the probe which was only active during the signals low
+phase. The solution I came up with was to use an inverter to drive an N-FET which would switch the probe directly to
+ground when the signal was low.
+
+Learning from my mistake with the diode I went in search of some small-signal grade components which had very short
+rise/fall times and very low gate capacitance's so as to not overly load the signal. For the inverter I found the
+[SN74LVC1G04DRYR](https://www.ti.com/product/SN74LVC1G04/part-details/SN74LVC1G04DRYR), and for the FET the
+[BSS138AKQB](https://www.nexperia.com/product/BSS138AKQB-Q). In hindsight these components are probably overkill, but I
+wanted to be very sure that if something didn't work with the design I could rule out component choice as a cause.
+
+Having assembled a few of these boards by now, I can confidently state that I hate this little inverter component. It
+has single handedly wasted hours of my time as a result of assembly failures. It is TINY and has really thin pads making
+it difficult to get consistent and sufficient solder paste applied.
+
+At least 20% of boards fail assembly and need to be reworked with a hot-air gun, tweezers, and some copper braid. A
+subset of those, I lose the part during rework and have to use a new one. \rant
+
+It would have been simple to design my own inverter circuit logic using only FETs but I wanted to reduce the number of
+components directly on the signal line, and simplify the circuitry. I might switch to doing this in the future.
+
+Here is what the resulting conditional discharge circuit looked like in the end:
+
+![](https://site.public.garage.julienvincent.io/moisture-sensor/clamp-schematic.webp)
+
+##### prior art
+
+I ended up discovering [this post](https://wemakethings.net/2012/09/26/capacitance_measurement/) discussing the same
+problem as described above. The author discusses a very similar solution to the one I arrived at. Their design, however,
+uses BJT's which are very slow and wouldn't have worked well at the frequencies I wanted to operate at.
+
+I can actually quite easily demonstrate that experimentally by prototyping their design on a breadboard, using some of
+the bare revision 2 PCB's I had lying around. We can drive it by hooking up a microcontroller to generate a 500Khz
+square-wave input signal and route that directly through the bare PCB by soldering on some connecting wires to the
+exposed pads.
+
+<Carousel
+  ratio={16 / 8}
+  images={[
+    {
+      src: 'https://site.public.garage.julienvincent.io/moisture-sensor/base-clamp-proto-closeup.webp',
+    },
+    {
+      src: 'https://site.public.garage.julienvincent.io/moisture-sensor/base-clamp-proto.webp',
+    },
+  ]}
+/>
+
+Hooking up my scope, I am able to capture the following:
+
+![](https://site.public.garage.julienvincent.io/moisture-sensor/scope-clamp-prototype.webp)
+
+As you can see, it does work as advertised - clamping the probe to ground just in time for the next high period to
+start. Notice, however, how _long_ it takes for the BJT's to kick in. Nearly a full microsecond! This design effectively
+caps us to (not much higher than) 500Khz. The BJT's are simply too slow.
+
+Looking at the datasheet for the `2N3904` we can see they advertise switching speeds of around **200-300ns**. The design
+uses two to build the clamp, and the remaining time is probably due to some capacitive loses in the breadboard itself.
+
+For comparison, the components I picked out above for my design advertise between **5-10ns** total switching time.
+Again, this is complete overkill but it is nice to have the headroom.
+
+### revision 3
+
+The end in sight, all that remains is some improvements on a mostly working design. There was just one more thing..
+While playing with the breadboard prototype above I had a bit of a lightbulb/facepalm moment.
+
+Here I am, trying to build analogue pulse-generators using 555 timers and mountains of
+[jellybean components](https://www.reddit.com/r/AskElectronics/comments/rmhe65/wtf_is_a_jellybean/) while I have a
+literal clock, a microcontroller faster than the computers used to send man to the moon, at my disposal.
+
+With a few lines of code I can command my supercomputer to generate for me a perfect, crispy clean PWM signal ranging
+all the way up to **40Mhz**!
+
+```rust
+let timer_config = ledc::config::TimerConfig::new()
+  .frequency(1500.kHz().into())
+  .resolution(ledc::Resolution::Bits2);
+
+let mut pwm_timer = ledc::LedcTimerDriver::new(peripherals.ledc.timer0, &timer_config)?;
+let mut driver = ledc::LedcDriver::new(
+  peripherals.ledc.channel0,
+  &pwm_timer,
+  peripherals.pins.gpio6,
+)?;
+
+driver.set_duty(2)?;
+driver.enable()?;
+```
+
+What am I doing! I can mercilessly discard the entire pulse generator subsystem, with all its peripheral components, and
+replace it with a single PCB trace to an IO pin. I feel so silly.
+
+An unexpected outcome of this (which got me quite exited) is that this will enable me to design experiments, **entirely
+in software**, that take readings at a range of different frequencies and record how they impact the probe accuracy. So
+cool!
+
+I plan to show the outcome of these experiments in a future post.
+
+---
+
+I got to work modifying my design, using all my prior learning's from testing revision 2.
+
+For my choice of replacement diode I decided to go with a **BAT54**, specifically the
+[78-BAT54W-HG3-08](https://www.mouser.co.uk/ProductDetail/78-BAT54W-HG3-08). It's still a schottky diode, but it is
+specifically designed for small-signal use-cases and people seem to like it.
+
+I removed all the 555 timer pulse-generator components and replaced them with a nice, simple IO trace.
+
+And lastly I added in my probe baseline clamp, driving it off the primary signal trace.
+
+#### the final assembly
+
+The latest PCBs assemble very nicely into their accompanying 3D printed enclosures, nestling alongside some tiny
+[EEMB 702030 350mAh lithium cells](https://www.aliexpress.com/item/1005005873853858.html?spm=a2g0o.order_list.order_list_main.10.301d1802s1mpA7).
+I picked these because they were the closest fit I could find, and from a seemingly reputably manufacturer.
+
+<Carousel
+  ratio={16 / 8}
+  images={[
+    {
+      src: 'https://site.public.garage.julienvincent.io/moisture-sensor/reflow.webp',
+      description: 'Reflow soldering. I could watch this all day',
+    },
+    {
+      src: 'https://site.public.garage.julienvincent.io/moisture-sensor/rev-3-close-up.webp',
+      description: 'Post soldering assembled PCBs',
+    },
+    {
+      src: 'https://site.public.garage.julienvincent.io/moisture-sensor/rev-3-enclosure.webp',
+      description: '3D printed enclosure',
+    },
+    {
+      src: 'https://site.public.garage.julienvincent.io/moisture-sensor/rev-3-assembled.webp',
+      description: 'Fully assembled probe',
+    },
+  ]}
+/>
+
+And it works _beautifully_! I placed them in several plants around the house and have been collecting and referencing
+the data from them for the last few months. They give a very clean, representative signal which I can use to make real
+decisions about when to water my plants.
+
+I also have all this data feeding directly into some dashboards from which I set up some very basic watering alerts for
+myself.
+
+Here is an annotated excerpt of data from the same bassil plant as before, now with the new probe in place.
+
+<MetricChart source="https://site.public.garage.julienvincent.io/moisture-sensor/data-3.json" references={['watered']} />
+
+It's really satisfying to me how huge the improvement is over the previous probe, not to even mention the original
+prototype.
+
+It produces a super clean **1.8v** peak to peak signal which represents a **54%** slice of the input signal. That's over
+**2x** better than revision 2 and an **11x** improvement over the original probe!
+
+**Note:** The actual measurement range is even larger than what I am representing here. This 1.8v/pp signal is over the
+wet/dry range of the plant, after which I need to water it before it gets any dryer. It can, however, get dryer - and
+the probe would be able to measure that.
+
+And for completeness, here is a sample of my scope showing the effectiveness of the dynamic signal base-line clamp:
+
+![](https://site.public.garage.julienvincent.io/moisture-sensor/scope-rev-3.webp)
+
+Even if those components were overkill, it was all worth it to see those crispy clean edges! And this is at **1Mhz**,
+mind you.
+
+#### analysing power consumption
+
+I didn't include much detail on power consumption optimisations in this post as I don't think it's particularly
+interesting. Throughout this process however I have been continuously analyzing and optimising the power consumption of
+these prototypes to get as much out of my tiny battery as possible.
+
+For this I have been using the
+[Power Profiler Kit 2](https://www.nordicsemi.com/Products/Development-hardware/Power-Profiler-Kit-2) (PPK2) - a truly
+invaluable piece of kit. If you are wanting to do anything with a battery, I cannot recommend this tool enough.
+
+Using the PPK2 I was able to find inefficiencies and reduce the idle power consumption of these boards down from
+~**500uA** to just **11uA**! On my 350mAh battery that is a theoretical lifespan of **3.5 years**! Assuming, of course,
+that the battery didn't loose charge over time and that the chip stayed idle for the entire period. The real lifespan
+will be a lot lower as we actually need to wake up and do some work, draining the battery by orders of magnitude more
+than the idle consumption.
+
+At this point, I don't really remember what my original estimations were from doing analysis that included the
+power-consumption during wake-up. It was, however, multiple months and at the time of writing I am yet to have a probe
+run out of juice.
+
+The real power optimisations come from what we decide to do in software, where we need to wake up for as short a period
+as possible before falling back into deep-sleep. That, as well, I will cover in a future post.
+
+---
+
+I do want to highlight one little clutch trick I ended up employing. One feature of the design is its ability to monitor
+the voltage of the attached battery. This is important for obvious reasons, being able to yell at me when I need to one
+day charge the thing.
+
+The battery voltage, however, is above the safe reading range of the MCU ADC. This means we need to step it down to safe
+levels using a voltage divider. The naive approach here would be to build a passive divider to ground, carelessly
+wasting many `uA`s of power while idle!
+
+What you can do instead is build up a divider via an IO pin on the MCU, set to output mode. By toggling the IO pin LOW
+you are effectively connecting the divider to ground - _conditionally_. Just remember to do this before taking readings!
+
+![](https://site.public.garage.julienvincent.io/moisture-sensor/battery-voltage-divider.webp)
+
+### can I get one?
+
+None of this is public at the moment, however I might decide to clean the project up and make it publicly available at
+some point. In the meantime, if you are interested in referencing any of this or building one for yourself feel free to
+contact me via email. I would be happy to share with you some of these resources or answer any questions.
+
+Are you interested in buying a fully assembled board? Please, let me know! If there is enough interest I may order some
+pre-assembled units for sale.

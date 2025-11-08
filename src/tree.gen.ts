@@ -17,8 +17,10 @@ import { Route as PostsIndexRouteImport } from './routes/posts/index'
 import { Route as PostsViewingJujutsuDiffsInNeovimRouteImport } from './routes/posts/viewing-jujutsu-diffs-in-neovim'
 import { Route as PostsTreesitterLanguageInjectionsRouteImport } from './routes/posts/treesitter-language-injections'
 import { Route as PostsTreesitterCodeBlocksRouteImport } from './routes/posts/treesitter-code-blocks'
+import { Route as ProjectsPlantOpsIndexRouteImport } from './routes/projects/plant-ops/index'
 import { Route as ProjectsFumeExtractorIndexRouteImport } from './routes/projects/fume-extractor/index'
 import { Route as ProjectsCartographerIndexRouteImport } from './routes/projects/cartographer/index'
+import { Route as ProjectsPlantOpsMoistureSensorHardwareIndexRouteImport } from './routes/projects/plant-ops/moisture-sensor-hardware/index'
 
 const ProjectsRoute = ProjectsRouteImport.update({
   id: '/projects',
@@ -63,6 +65,11 @@ const PostsTreesitterCodeBlocksRoute =
     path: '/treesitter-code-blocks',
     getParentRoute: () => PostsRoute,
   } as any)
+const ProjectsPlantOpsIndexRoute = ProjectsPlantOpsIndexRouteImport.update({
+  id: '/plant-ops/',
+  path: '/plant-ops/',
+  getParentRoute: () => ProjectsRoute,
+} as any)
 const ProjectsFumeExtractorIndexRoute =
   ProjectsFumeExtractorIndexRouteImport.update({
     id: '/fume-extractor/',
@@ -73,6 +80,12 @@ const ProjectsCartographerIndexRoute =
   ProjectsCartographerIndexRouteImport.update({
     id: '/cartographer/',
     path: '/cartographer/',
+    getParentRoute: () => ProjectsRoute,
+  } as any)
+const ProjectsPlantOpsMoistureSensorHardwareIndexRoute =
+  ProjectsPlantOpsMoistureSensorHardwareIndexRouteImport.update({
+    id: '/plant-ops/moisture-sensor-hardware/',
+    path: '/plant-ops/moisture-sensor-hardware/',
     getParentRoute: () => ProjectsRoute,
   } as any)
 
@@ -87,6 +100,8 @@ export interface FileRoutesByFullPath {
   '/projects/': typeof ProjectsIndexRoute
   '/projects/cartographer': typeof ProjectsCartographerIndexRoute
   '/projects/fume-extractor': typeof ProjectsFumeExtractorIndexRoute
+  '/projects/plant-ops': typeof ProjectsPlantOpsIndexRoute
+  '/projects/plant-ops/moisture-sensor-hardware': typeof ProjectsPlantOpsMoistureSensorHardwareIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -97,6 +112,8 @@ export interface FileRoutesByTo {
   '/projects': typeof ProjectsIndexRoute
   '/projects/cartographer': typeof ProjectsCartographerIndexRoute
   '/projects/fume-extractor': typeof ProjectsFumeExtractorIndexRoute
+  '/projects/plant-ops': typeof ProjectsPlantOpsIndexRoute
+  '/projects/plant-ops/moisture-sensor-hardware': typeof ProjectsPlantOpsMoistureSensorHardwareIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -110,6 +127,8 @@ export interface FileRoutesById {
   '/projects/': typeof ProjectsIndexRoute
   '/projects/cartographer/': typeof ProjectsCartographerIndexRoute
   '/projects/fume-extractor/': typeof ProjectsFumeExtractorIndexRoute
+  '/projects/plant-ops/': typeof ProjectsPlantOpsIndexRoute
+  '/projects/plant-ops/moisture-sensor-hardware/': typeof ProjectsPlantOpsMoistureSensorHardwareIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -124,6 +143,8 @@ export interface FileRouteTypes {
     | '/projects/'
     | '/projects/cartographer'
     | '/projects/fume-extractor'
+    | '/projects/plant-ops'
+    | '/projects/plant-ops/moisture-sensor-hardware'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -134,6 +155,8 @@ export interface FileRouteTypes {
     | '/projects'
     | '/projects/cartographer'
     | '/projects/fume-extractor'
+    | '/projects/plant-ops'
+    | '/projects/plant-ops/moisture-sensor-hardware'
   id:
     | '__root__'
     | '/'
@@ -146,6 +169,8 @@ export interface FileRouteTypes {
     | '/projects/'
     | '/projects/cartographer/'
     | '/projects/fume-extractor/'
+    | '/projects/plant-ops/'
+    | '/projects/plant-ops/moisture-sensor-hardware/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -212,6 +237,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PostsTreesitterCodeBlocksRouteImport
       parentRoute: typeof PostsRoute
     }
+    '/projects/plant-ops/': {
+      id: '/projects/plant-ops/'
+      path: '/plant-ops'
+      fullPath: '/projects/plant-ops'
+      preLoaderRoute: typeof ProjectsPlantOpsIndexRouteImport
+      parentRoute: typeof ProjectsRoute
+    }
     '/projects/fume-extractor/': {
       id: '/projects/fume-extractor/'
       path: '/fume-extractor'
@@ -224,6 +256,13 @@ declare module '@tanstack/react-router' {
       path: '/cartographer'
       fullPath: '/projects/cartographer'
       preLoaderRoute: typeof ProjectsCartographerIndexRouteImport
+      parentRoute: typeof ProjectsRoute
+    }
+    '/projects/plant-ops/moisture-sensor-hardware/': {
+      id: '/projects/plant-ops/moisture-sensor-hardware/'
+      path: '/plant-ops/moisture-sensor-hardware'
+      fullPath: '/projects/plant-ops/moisture-sensor-hardware'
+      preLoaderRoute: typeof ProjectsPlantOpsMoistureSensorHardwareIndexRouteImport
       parentRoute: typeof ProjectsRoute
     }
   }
@@ -250,12 +289,17 @@ interface ProjectsRouteChildren {
   ProjectsIndexRoute: typeof ProjectsIndexRoute
   ProjectsCartographerIndexRoute: typeof ProjectsCartographerIndexRoute
   ProjectsFumeExtractorIndexRoute: typeof ProjectsFumeExtractorIndexRoute
+  ProjectsPlantOpsIndexRoute: typeof ProjectsPlantOpsIndexRoute
+  ProjectsPlantOpsMoistureSensorHardwareIndexRoute: typeof ProjectsPlantOpsMoistureSensorHardwareIndexRoute
 }
 
 const ProjectsRouteChildren: ProjectsRouteChildren = {
   ProjectsIndexRoute: ProjectsIndexRoute,
   ProjectsCartographerIndexRoute: ProjectsCartographerIndexRoute,
   ProjectsFumeExtractorIndexRoute: ProjectsFumeExtractorIndexRoute,
+  ProjectsPlantOpsIndexRoute: ProjectsPlantOpsIndexRoute,
+  ProjectsPlantOpsMoistureSensorHardwareIndexRoute:
+    ProjectsPlantOpsMoistureSensorHardwareIndexRoute,
 }
 
 const ProjectsRouteWithChildren = ProjectsRoute._addFileChildren(
