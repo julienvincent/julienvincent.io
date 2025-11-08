@@ -14,6 +14,7 @@ import { Route as PostsRouteImport } from './routes/posts'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProjectsIndexRouteImport } from './routes/projects/index'
 import { Route as PostsIndexRouteImport } from './routes/posts/index'
+import { Route as PostsViewingJujutsuDiffsInNeovimRouteImport } from './routes/posts/viewing-jujutsu-diffs-in-neovim'
 import { Route as PostsTreesitterLanguageInjectionsRouteImport } from './routes/posts/treesitter-language-injections'
 import { Route as PostsTreesitterCodeBlocksRouteImport } from './routes/posts/treesitter-code-blocks'
 import { Route as ProjectsFumeExtractorIndexRouteImport } from './routes/projects/fume-extractor/index'
@@ -44,6 +45,12 @@ const PostsIndexRoute = PostsIndexRouteImport.update({
   path: '/',
   getParentRoute: () => PostsRoute,
 } as any)
+const PostsViewingJujutsuDiffsInNeovimRoute =
+  PostsViewingJujutsuDiffsInNeovimRouteImport.update({
+    id: '/viewing-jujutsu-diffs-in-neovim',
+    path: '/viewing-jujutsu-diffs-in-neovim',
+    getParentRoute: () => PostsRoute,
+  } as any)
 const PostsTreesitterLanguageInjectionsRoute =
   PostsTreesitterLanguageInjectionsRouteImport.update({
     id: '/treesitter-language-injections',
@@ -75,6 +82,7 @@ export interface FileRoutesByFullPath {
   '/projects': typeof ProjectsRouteWithChildren
   '/posts/treesitter-code-blocks': typeof PostsTreesitterCodeBlocksRoute
   '/posts/treesitter-language-injections': typeof PostsTreesitterLanguageInjectionsRoute
+  '/posts/viewing-jujutsu-diffs-in-neovim': typeof PostsViewingJujutsuDiffsInNeovimRoute
   '/posts/': typeof PostsIndexRoute
   '/projects/': typeof ProjectsIndexRoute
   '/projects/cartographer': typeof ProjectsCartographerIndexRoute
@@ -84,6 +92,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/posts/treesitter-code-blocks': typeof PostsTreesitterCodeBlocksRoute
   '/posts/treesitter-language-injections': typeof PostsTreesitterLanguageInjectionsRoute
+  '/posts/viewing-jujutsu-diffs-in-neovim': typeof PostsViewingJujutsuDiffsInNeovimRoute
   '/posts': typeof PostsIndexRoute
   '/projects': typeof ProjectsIndexRoute
   '/projects/cartographer': typeof ProjectsCartographerIndexRoute
@@ -96,6 +105,7 @@ export interface FileRoutesById {
   '/projects': typeof ProjectsRouteWithChildren
   '/posts/treesitter-code-blocks': typeof PostsTreesitterCodeBlocksRoute
   '/posts/treesitter-language-injections': typeof PostsTreesitterLanguageInjectionsRoute
+  '/posts/viewing-jujutsu-diffs-in-neovim': typeof PostsViewingJujutsuDiffsInNeovimRoute
   '/posts/': typeof PostsIndexRoute
   '/projects/': typeof ProjectsIndexRoute
   '/projects/cartographer/': typeof ProjectsCartographerIndexRoute
@@ -109,6 +119,7 @@ export interface FileRouteTypes {
     | '/projects'
     | '/posts/treesitter-code-blocks'
     | '/posts/treesitter-language-injections'
+    | '/posts/viewing-jujutsu-diffs-in-neovim'
     | '/posts/'
     | '/projects/'
     | '/projects/cartographer'
@@ -118,6 +129,7 @@ export interface FileRouteTypes {
     | '/'
     | '/posts/treesitter-code-blocks'
     | '/posts/treesitter-language-injections'
+    | '/posts/viewing-jujutsu-diffs-in-neovim'
     | '/posts'
     | '/projects'
     | '/projects/cartographer'
@@ -129,6 +141,7 @@ export interface FileRouteTypes {
     | '/projects'
     | '/posts/treesitter-code-blocks'
     | '/posts/treesitter-language-injections'
+    | '/posts/viewing-jujutsu-diffs-in-neovim'
     | '/posts/'
     | '/projects/'
     | '/projects/cartographer/'
@@ -178,6 +191,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PostsIndexRouteImport
       parentRoute: typeof PostsRoute
     }
+    '/posts/viewing-jujutsu-diffs-in-neovim': {
+      id: '/posts/viewing-jujutsu-diffs-in-neovim'
+      path: '/viewing-jujutsu-diffs-in-neovim'
+      fullPath: '/posts/viewing-jujutsu-diffs-in-neovim'
+      preLoaderRoute: typeof PostsViewingJujutsuDiffsInNeovimRouteImport
+      parentRoute: typeof PostsRoute
+    }
     '/posts/treesitter-language-injections': {
       id: '/posts/treesitter-language-injections'
       path: '/treesitter-language-injections'
@@ -212,6 +232,7 @@ declare module '@tanstack/react-router' {
 interface PostsRouteChildren {
   PostsTreesitterCodeBlocksRoute: typeof PostsTreesitterCodeBlocksRoute
   PostsTreesitterLanguageInjectionsRoute: typeof PostsTreesitterLanguageInjectionsRoute
+  PostsViewingJujutsuDiffsInNeovimRoute: typeof PostsViewingJujutsuDiffsInNeovimRoute
   PostsIndexRoute: typeof PostsIndexRoute
 }
 
@@ -219,6 +240,7 @@ const PostsRouteChildren: PostsRouteChildren = {
   PostsTreesitterCodeBlocksRoute: PostsTreesitterCodeBlocksRoute,
   PostsTreesitterLanguageInjectionsRoute:
     PostsTreesitterLanguageInjectionsRoute,
+  PostsViewingJujutsuDiffsInNeovimRoute: PostsViewingJujutsuDiffsInNeovimRoute,
   PostsIndexRoute: PostsIndexRoute,
 }
 

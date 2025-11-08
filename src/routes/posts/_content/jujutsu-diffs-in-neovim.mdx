@@ -1,0 +1,175 @@
+A very significant amount of my time is spent in the terminal just reading commit diffs. Perhaps I am reminding myself
+of a change I made just yesterday. Maybe I am viewing a feature I am working on that I want to split up and place gently
+into the git log. Or maybe I am hunting down some long-evasive bug.
+
+Most often I am reading other peoples code, freshly baked and ready for a review.
+
+Whatever it is, I want the latency and cognitive overhead of going from commit to a diff and back again to be as
+minuscule as technically possible. I don't want to leave the comfort of my terminal. And most importantly, I certainly
+don't want to be faffing with some unfamiliar pager interface, scrolling endlessly through a wall of text, each file
+stacked one after the other, endlessly.
+
+I want to be comfortable. I want to be using the tool I have spent a millennium crafting into the sublime textual
+extension of my fingertips and mind. I want Neovim. I want sindrets
+[DiffView](https://github.com/sindrets/diffview.nvim).
+
+---
+
+I made a thing and have been using it lovingly for the past year. Today I offer it to you as a Christmas gift, some
+assembly required.
+
+## jd
+
+Surprise! It's a shell script.
+
+```bash hideLineNumbers
+Usage: jd [options] [<ref>]
+
+Options:
+  -f, --from <ref>   Start diff from this revision
+  -t, --to <ref>     End diff at this revision
+  -s, --split        Split the diff by commit
+  -S, --symmetric    View the symmetric difference (a...b)
+  -h, --help         Show this help message
+
+Examples:
+  jd                           Show diff of current commit
+  jd <ref>                     Show diff of specific commit
+  jd --from a                  Show diff from <ref> to current
+  jd --to a                    Show diff of specific commit
+  jd --from a --to b           Show diff between two commits
+  jd --from a --to b --split   Show diff of each commit between a and b
+```
+
+```fish hideLineNumbers
+# View a diff of the current working commit
+jd @
+# or just `jd`
+
+# View the diff of vvsxmnmq
+jd vvsxmnmq
+
+# View the symmetric difference of vvsxmnmq::master@origin, commit by commit
+jd --from vvsxmnmq --to master@origin -Ss
+```
+
+Yup, it's just a fish shell script.
+
+---
+
+OK, so my idea was to hack together a tool which could bridge the gap between Jujutsu and existing Neovim tooling that
+already understands git.
+
+I want to, from my terminal, reference jujutsu Change IDs and have that open up diffview.nvim in a temporary Neovim
+instance, displaying the underlying git commits pointed at by the aforementioned Change IDs.
+
+Some common flows where I might this:
+
+- Viewing the current working copy quickly (`jd`)
+- Viewing the diff of some arbitrary change I found in the log (`jd x`)
+- Viewing the diff across some range of changes (`jd --from a --to b`)
+- Viewing someones PR, which may be pointing to an outdated trunk or ancestor
+  (`jd --from feature@origin --to master@origin -S`)
+
+JD works by resolving whatever Change IDs you give it to the underlying git commit and then launches Neovim directly
+into diffview - passing in the resolved git commits. Under the hood this looks something like:
+
+```bash
+jd @
+# Resolves to
+nvim -c "DiffviewOpen 06dfd193^"
+
+jd --from x --to y
+# Resolves to
+nvim -c "DiffviewOpen 06dfd193..4e0e81ea"
+
+jd --from x --to y --symmetric
+# Resolves to the symmetric difference
+nvim -c "DiffviewOpen 06dfd193...4e0e81ea"
+
+jd --from x --to y --split
+# Opens diffview's FileHistory view instead
+nvim -c "DiffviewFileHistory --range=06dfd193..4e0e81ea --right-only --no-merges"
+```
+
+#### the symmetric difference
+
+An important detail to raise a note on; if you are not already familiar with the term "symmetric difference" or how it
+relates to git then here is a quick breakdown.
+
+Say someone is working on a feature branch off of `master` but while they are working on their branch, master
+progresses:
+
+If you were to view the diff between master@origin and their feature branch (`abc..master`) then you would **also** be
+unintentionally viewing the diff of their branch with all the changes that came in to master since. Unless you were
+doing that intentionally, of course.
+
+If you are reviewing a PR then what you probably _intended_ to do was to view the **symmetric** difference
+(`abc...master` note the triples). This will show you the diff of changes in the feature branch that are not also in
+master. This is what Githubs PR diff view does internally for you as well.
+
+In `jd` this is represented by the `--symmetric` flag or just `-S` for short. I use this when reviewing someone elses PR
+locally.
+
+## i want this!
+
+You want it? You can find the source-code for this in my dotfiles
+[over here](https://github.com/julienvincent/.config/blob/8e3d6889040578f34d8878bc834cbfa1ec8640a4/fish/functions/jd.fish).
+
+It is a really simple script, just a short fish function that you can copy over as-is into your own fish config. If you
+aren't using fish I'm sure if you ask nicely little AI will have no problem translating it over to your shell of
+preference.
+
+---
+
+There is a small quality-of-life tweak I would recommend making to your Neovim config to get the maximum use out of
+this:
+
+Add a conditional keybinding in your diffview config to completely quit Neovim on `q` if Neovim was opened directly into
+diffview. This allows viewing a diff with `jd` and then pressing `q` to very quickly exit back out to your terminal.
+
+```lua
+-- This checks if Neovim was started with "-c Diffview[Open|FileHistory]" in which case we
+-- generally want to quit neovim when exiting DiffView.
+local function opened_on_boot()
+  for i = 1, #vim.v.argv do
+    if vim.v.argv[i] == "-c" and vim.v.argv[i + 1] and vim.v.argv[i + 1]:match("^Diffview") then
+      return true
+    end
+  end
+  return false
+end
+
+local function close_diffview()
+  if opened_on_boot() then
+    vim.cmd("qa")
+    return
+  end
+
+  vim.cmd.DiffviewClose()
+end
+
+-- ...
+
+require("diffview").setup({
+  keymaps = {
+    view = {
+      ["q"] = close_diffview,
+    },
+    file_panel = {
+      ["q"] = close_diffview,
+    },
+    file_history_panel = {
+      ["q"] = close_diffview,
+    }
+  }
+})
+```
+
+Or you can refer to
+[my neovim config](https://github.com/julienvincent/config.nvim/blob/7876fff4d7f097818d095a9288781f31440b8cd5/lua/julienvincent/plugins/git.lua)
+to see how I do this in context.
+
+---
+
+That's it! Enjoy :)
