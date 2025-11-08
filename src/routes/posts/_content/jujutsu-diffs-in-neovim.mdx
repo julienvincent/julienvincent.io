@@ -50,7 +50,7 @@ jd @
 jd vvsxmnmq
 
 # View the symmetric difference of vvsxmnmq::master@origin, commit by commit
-jd --from vvsxmnmq --to master@origin -Ss
+jd --from master@origin --to vvsxmnmq -Ss
 ```
 
 Yup, it's just a fish shell script.
@@ -69,7 +69,7 @@ Some common flows where I might use this:
 - Viewing the diff of some arbitrary change I found in the log (`jd x`)
 - Viewing the diff across some range of changes (`jd --from a --to b`)
 - Viewing someones PR, which may be pointing to an outdated trunk or ancestor
-  (`jd --from feature@origin --to master@origin -S`)
+  (`jd --from master@origin --to feature@origin -S`)
 
 JD works by resolving whatever Change IDs you give it to the underlying git commit and then launches Neovim directly
 into diffview - passing in the resolved git commits. Under the hood this looks something like:
