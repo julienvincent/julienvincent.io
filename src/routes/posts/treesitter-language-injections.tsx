@@ -8,6 +8,7 @@ export const Route = createFileRoute('/posts/treesitter-language-injections')(
       () => import('./_content/treesitter-language-injections.mdx'),
     ),
     title: 'Casually Using Language Injections in Neovim',
+    keywords: ['neovim', 'tree-sitter', 'programming', 'syntax highlighting'],
     date: '2025/10/23',
   }),
 );

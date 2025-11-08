@@ -8,6 +8,7 @@ export const Route = createFileRoute('/posts/treesitter-code-blocks')(
       () => import('./_content/treesitter-code-blocks.mdx'),
     ),
     title: 'Compiling Markdown Code Blocks with Tree-Sitter',
+    keywords: ['neovim', 'tree-sitter', 'programming', 'syntax highlighting'],
     date: '2025/10/23',
   }),
 );
