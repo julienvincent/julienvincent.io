@@ -128,7 +128,7 @@ export function Ul(props: ComponentProps<'ul'>) {
       {...props}
       className={cn(
         'mdx',
-        'mb-10 pl-10',
+        'mb-5 pl-10',
         '[&>li]:mt-1 [&>li]:mb-2',
         '[&>li>*]:ml-0 [&>li>*]:pl-0 [&>li>*]:mb-2',
         props.className,
@@ -142,7 +142,7 @@ export function Ol(props: ComponentProps<'ol'>) {
     <ol
       {...props}
       className={cn(
-        'mb-10 ml-8 list-decimal list-outside text-base',
+        'mb-5 ml-8 list-decimal list-outside text-base',
         '[&>li]:mt-1 [&>li]:mb-3 marker:text-muted-foreground marker:text-base',
         '[&>li>p]:mb-3 [&>li>p]:ml-2',
         props.className,
@@ -212,7 +212,7 @@ export function Pre(props: PreProps) {
 
   return (
     <>
-      <div className="rounded-t-md border-b-1 px-3 py-2 text-xs font-semibold text-code-foreground flex-row flex bg-code-background">
+      <div className="rounded-t-md border-b px-3 py-2 text-xs font-semibold text-code-foreground flex-row flex bg-code-background">
         <FileIcon size={15} className="mr-2" />
         {filename}
       </div>
@@ -234,7 +234,7 @@ export function Img(props: ComponentProps<'img'>) {
   const { alt, ...rest } = props;
   return (
     <div>
-      <img {...rest} className={cn(props.className, 'mb-10 mt-10 rounded-md')} />
+      <img {...rest} className={cn(props.className, 'mb-5 mt-5 rounded-md')} />
       {alt && <p className="-mt-5 ml-3 text-muted-foreground text-xs">{alt}</p>}
     </div>
   );
@@ -244,7 +244,7 @@ export function Image(
   props: ComponentProps<'img'> & { ratio?: number; grayscale?: boolean },
 ) {
   return (
-    <div className="mb-10 mt-10">
+    <div className="mb-5 mt-5">
       <AspectRatio
         ratio={props.ratio ?? 1}
         className={cn('bg-muted rounded-lg')}

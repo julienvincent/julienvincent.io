@@ -55,7 +55,7 @@ export default function MdxCarousel(props: Props) {
   const { selected_index, scroll_snaps, onDotButtonClick } = useDotButton(api);
 
   return (
-    <Carousel plugins={[Fade()]} setApi={setApi} className="mt-10 mb-20">
+    <Carousel plugins={[Fade()]} setApi={setApi} className="mb-5">
       <CarouselContent>
         {props.images.map((image, i) => {
           return (
