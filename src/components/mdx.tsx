@@ -231,12 +231,12 @@ export function Code(props: ComponentProps<'code'>) {
 }
 
 export function Img(props: ComponentProps<'img'>) {
+  const { alt, ...rest } = props;
   return (
-    <img
-      {...props}
-      style={{ borderStyle: 'solid' }}
-      className={cn(props.className, 'mb-10 mt-10 rounded-md border-2')}
-    />
+    <div>
+      <img {...rest} className={cn(props.className, 'mb-10 mt-10 rounded-md')} />
+      {alt && <p className="-mt-5 ml-3 text-muted-foreground text-xs">{alt}</p>}
+    </div>
   );
 }
 

@@ -14,6 +14,7 @@ type ImageProps = {
   src: string;
   className?: string;
   grayscale?: boolean;
+  description?: string;
 };
 
 type LazyImageProps = ImageProps & {
@@ -75,14 +76,30 @@ export default function MdxCarousel(props: Props) {
         })}
       </CarouselContent>
 
-      <div className="flex float-right">
-        {scroll_snaps.map((_, index) => (
-          <DotButton
-            key={index}
-            onClick={() => onDotButtonClick(index)}
-            selected={index === selected_index}
-          />
-        ))}
+      <div className="flex flex-row justify-between">
+        <div>
+          {props.images.map((image, i) => {
+            if (!image.description || i !== selected_index) {
+              return;
+            }
+
+            return (
+              <p className="mt-0.5 ml-5 text-muted-foreground text-xs" key={i}>
+                {image.description}
+              </p>
+            );
+          })}
+        </div>
+
+        <div className="flex float-right ml-5">
+          {scroll_snaps.map((_, index) => (
+            <DotButton
+              key={index}
+              onClick={() => onDotButtonClick(index)}
+              selected={index === selected_index}
+            />
+          ))}
+        </div>
       </div>
     </Carousel>
   );
