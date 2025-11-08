@@ -7,11 +7,13 @@ import { RouterProvider, createRouter } from '@tanstack/react-router';
 
 import { routeTree } from './tree.gen';
 import type { RouteMetadata } from './types/routes';
+import NotFound from './components/not-found';
 
 const router = createRouter({
   routeTree,
   trailingSlash: 'preserve',
   scrollRestoration: true,
+  defaultNotFoundComponent: NotFound,
 });
 declare module '@tanstack/react-router' {
   interface Register {
