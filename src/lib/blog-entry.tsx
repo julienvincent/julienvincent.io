@@ -52,6 +52,7 @@ type ProjectProps = {
   description: string;
   keywords?: string[];
   hidden?: boolean;
+  anchors?: boolean;
 };
 export function createProjectRoute(props: ProjectProps) {
   return {
@@ -74,7 +75,7 @@ export function createProjectRoute(props: ProjectProps) {
             keywords={props.keywords}
           />
           <H1>{props.title}</H1>
-          <div className="with-anchors">
+          <div className={(props.anchors ?? true) ? 'with-anchors' : ''}>
             <Component />
           </div>
         </>

@@ -128,8 +128,8 @@ export function Ul(props: ComponentProps<'ul'>) {
       className={cn(
         'mdx',
         'mb-10 pl-10',
-        '[&>li]:mt-1 [&>li]:mb-3',
-        '[&>li>*]:ml-0 [&>li>*]:pl-0 [&>li>*]:mb-3',
+        '[&>li]:mt-1 [&>li]:mb-2',
+        '[&>li>*]:ml-0 [&>li>*]:pl-0 [&>li>*]:mb-2',
         props.className,
       )}
     />
@@ -141,8 +141,8 @@ export function Ol(props: ComponentProps<'ol'>) {
     <ol
       {...props}
       className={cn(
-        'mb-10 ml-8 list-decimal list-outside',
-        '[&>li]:mt-1 [&>li]:mb-5 marker:text-muted-foreground',
+        'mb-10 ml-8 list-decimal list-outside text-base',
+        '[&>li]:mt-1 [&>li]:mb-3 marker:text-muted-foreground marker:text-base',
         '[&>li>p]:mb-3 [&>li>p]:ml-2',
         props.className,
       )}
