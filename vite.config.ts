@@ -5,6 +5,7 @@ import mdx from '@mdx-js/rollup';
 import { tanstackRouter } from '@tanstack/router-plugin/vite';
 import rehypeHighlightLines from 'rehype-highlight-code-lines';
 import rehypeCodeProps from 'rehype-mdx-code-props';
+import remarkGfm from 'remark-gfm';
 import path from 'node:path';
 import rehypeTreeSitterHighlight, {
   type HighlighterOptions,
@@ -16,6 +17,7 @@ export default defineConfig({
       enforce: 'pre',
       ...mdx({
         providerImportSource: '@mdx-js/react',
+        remarkPlugins: [remarkGfm],
         rehypePlugins: [
           [
             rehypeTreeSitterHighlight,
