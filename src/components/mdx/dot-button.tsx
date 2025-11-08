@@ -64,6 +64,7 @@ export const useDotButton = (
 
 type PropType = React.ComponentProps<typeof Button> & {
   selected?: boolean;
+  value: string;
 };
 
 export const DotButton = (props: PropType) => {
@@ -74,12 +75,15 @@ export const DotButton = (props: PropType) => {
       data-slot="button"
       onClick={props.onClick}
       className={cn(
-        'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all',
-        'hover:bg-none cursor-pointer m-1 mt-3 text-muted-foreground',
-        selected ? 'text-secondary dark:text-accent' : '',
+        'text-lg font-medium text-muted-foreground',
+        'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md transition-all',
+        'hover:bg-none cursor-pointer m-1',
+        selected
+          ? 'text-secondary dark:text-accent underline decoration-2 underline-offset-2 font-black'
+          : '',
       )}
     >
-      <Square strokeWidth={4} size={20} />
+      {props.value}
     </button>
   );
 };

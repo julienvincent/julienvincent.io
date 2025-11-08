@@ -97,6 +97,7 @@ export default function MdxCarousel(props: Props) {
               key={index}
               onClick={() => onDotButtonClick(index)}
               selected={index === selected_index}
+              value={`${index + 1}`}
             />
           ))}
         </div>
