@@ -10,6 +10,7 @@ import path from 'node:path';
 import rehypeTreeSitterHighlight, {
   type HighlighterOptions,
 } from '@julienvincent/rehype-tree-sitter-highlight';
+import { rssPlugin } from './plugins/rss-plugin';
 
 export default defineConfig({
   plugins: [
@@ -68,6 +69,12 @@ export default defineConfig({
       generatedRouteTree: './src/tree.gen.ts',
       routeFileIgnorePrefix: '-',
       quoteStyle: 'single',
+    }),
+    rssPlugin({
+      site_url: 'https://julienvincent.io',
+      site_title: 'julienvincent.io',
+      site_description: 'Posts from julienvincent.io',
+      feed_path: 'rss.xml',
     }),
     // This include string is to get HMR working for mdx files
     react({ include: [/\.([jt]sx|mdx)$/] }),
