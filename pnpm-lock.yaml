@@ -61,14 +61,14 @@ importers:
         version: 3.3.1
     devDependencies:
       '@julienvincent/rehype-tree-sitter-highlight':
-        specifier: ^1.0.2
-        version: 1.0.2
+        specifier: ^1.0.3
+        version: 1.0.3
       '@julienvincent/tree-sitter-highlight-darwin-arm64':
-        specifier: ^1.0.2
-        version: 1.0.2
+        specifier: ^1.0.3
+        version: 1.0.3
       '@julienvincent/tree-sitter-highlight-linux-arm64':
-        specifier: ^1.0.2
-        version: 1.0.2
+        specifier: ^1.0.3
+        version: 1.0.3
       '@mdx-js/react':
         specifier: ^3.1.1
         version: 3.1.1(@types/react@19.2.2)(react@19.2.0)
@@ -448,35 +448,35 @@ packages:
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
 
-  '@julienvincent/rehype-tree-sitter-highlight@1.0.2':
-    resolution: {integrity: sha512-A6kJtkAw2Q1IM67xxZ6PdNicGLd5Hro7jJb/eIYmFfY1xa2wyfg3U4rcoGTFLh3YNKVUlKALr/LB3GgTi6Dfxw==}
+  '@julienvincent/rehype-tree-sitter-highlight@1.0.3':
+    resolution: {integrity: sha512-pRs3L85d7npbkJFdRyEt40NN1NXUp09XGzSUBqJHAi2MFHUhAPqIzKuqGpzrSn5tHL8IhzNzpLnnr9VhCZW54g==}
 
-  '@julienvincent/tree-sitter-highlight-darwin-arm64@1.0.2':
-    resolution: {integrity: sha512-kIaYzI5xx6736dTrNfZnWfZkeDju0hl0EhPAvQnqe5TvSBda3ZhU9m9+Hnc/91K8TF3Zm6BoLS5xYleOvLMe0Q==}
+  '@julienvincent/tree-sitter-highlight-darwin-arm64@1.0.3':
+    resolution: {integrity: sha512-JBj++1CRk4AHD4ImWnPuOslB1GnddD6WmblnXVyaVUrpeKfAIRVnKTNxpGxr8up/b5XfXYDN4CniAmQ3BK1L1w==}
     engines: {node: '>= 12.22.0 < 13 || >= 14.17.0 < 15 || >= 15.12.0 < 16 || >= 16.0.0'}
     cpu: [arm64]
     os: [darwin]
 
-  '@julienvincent/tree-sitter-highlight-darwin-x64@1.0.2':
-    resolution: {integrity: sha512-2+lYRE1e7f1NbIYfcVUumB9LgUM73axyE/2ilU8oWYMBpSeNKTdnUR8UD9yucgOiw0FBcNfSseVEg0beif8o1g==}
+  '@julienvincent/tree-sitter-highlight-darwin-x64@1.0.3':
+    resolution: {integrity: sha512-YJB6WAqghTEMnQSYJWwyYAKAiA7SNTvb6OJkZKVMXvMTsc7HwBNDnnYVmes6tdcqOP6qcYKtPf0hqU1+IYg7TQ==}
     engines: {node: '>= 12.22.0 < 13 || >= 14.17.0 < 15 || >= 15.12.0 < 16 || >= 16.0.0'}
     cpu: [x64]
     os: [darwin]
 
-  '@julienvincent/tree-sitter-highlight-linux-arm64@1.0.2':
-    resolution: {integrity: sha512-v6rumg1yAX9bsrAam9xwbiTvQdVMIuUC99uPYsdn1fS9c/zKg+bHTmBElCZkjyNaYUuPVI5zCUFOFfFwkp71RA==}
+  '@julienvincent/tree-sitter-highlight-linux-arm64@1.0.3':
+    resolution: {integrity: sha512-FG/nSB343nvlZW6gISQK/irj/Y5vJDbm9t6zvgTdo6u7NOw2BedLzGw25Z/QXsG4xn8TrtcWdUa7ALF9F2gjGA==}
     engines: {node: '>= 12.22.0 < 13 || >= 14.17.0 < 15 || >= 15.12.0 < 16 || >= 16.0.0'}
     cpu: [arm64]
     os: [linux]
 
-  '@julienvincent/tree-sitter-highlight-linux-x64@1.0.2':
-    resolution: {integrity: sha512-OF45kXKJCf68IqcQE4oBuLxZrgzUiP05nVcXSAK6IAynohIOAJVUTl+BM+uicMfzWcBeH0LrVUVCH+MRKfVV6g==}
+  '@julienvincent/tree-sitter-highlight-linux-x64@1.0.3':
+    resolution: {integrity: sha512-/0TVYNaHPvsa2VausnnHS+mgYdVS+yX8Jt/JVX1ZvWCBWjAOxhv4AlNWpOvLBMqjUjHoOF7nTFosmyvJwgu5Gw==}
     engines: {node: '>= 12.22.0 < 13 || >= 14.17.0 < 15 || >= 15.12.0 < 16 || >= 16.0.0'}
     cpu: [x64]
     os: [linux]
 
-  '@julienvincent/tree-sitter-highlight@1.0.2':
-    resolution: {integrity: sha512-rU5tFjI4gqzVH0K9FzTmTX8g6y0a6gx1/yvS/hQfHdKRTRBkpML+rxeW1PTxCvRc8ptDRr5ybwnv5oaZqFJ6Yg==}
+  '@julienvincent/tree-sitter-highlight@1.0.3':
+    resolution: {integrity: sha512-Jfiuc9t+VonoGR5Evu4DQPpMUcsEycFfq8NVkM36zgzlUz5S46xysfgFMQTwaN+kZveu+/3OajB2RhMQqr/qzw==}
     engines: {node: '>= 12.22.0 < 13 || >= 14.17.0 < 15 || >= 15.12.0 < 16 || >= 16.0.0'}
 
   '@mdx-js/mdx@3.1.1':
@@ -2405,28 +2405,28 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  '@julienvincent/rehype-tree-sitter-highlight@1.0.2':
+  '@julienvincent/rehype-tree-sitter-highlight@1.0.3':
     dependencies:
-      '@julienvincent/tree-sitter-highlight': 1.0.2
+      '@julienvincent/tree-sitter-highlight': 1.0.3
       hast: 1.0.0
       unist-util-visit: 5.0.0
 
-  '@julienvincent/tree-sitter-highlight-darwin-arm64@1.0.2': {}
+  '@julienvincent/tree-sitter-highlight-darwin-arm64@1.0.3': {}
 
-  '@julienvincent/tree-sitter-highlight-darwin-x64@1.0.2':
+  '@julienvincent/tree-sitter-highlight-darwin-x64@1.0.3':
     optional: true
 
-  '@julienvincent/tree-sitter-highlight-linux-arm64@1.0.2': {}
+  '@julienvincent/tree-sitter-highlight-linux-arm64@1.0.3': {}
 
-  '@julienvincent/tree-sitter-highlight-linux-x64@1.0.2':
+  '@julienvincent/tree-sitter-highlight-linux-x64@1.0.3':
     optional: true
 
-  '@julienvincent/tree-sitter-highlight@1.0.2':
+  '@julienvincent/tree-sitter-highlight@1.0.3':
     optionalDependencies:
-      '@julienvincent/tree-sitter-highlight-darwin-arm64': 1.0.2
-      '@julienvincent/tree-sitter-highlight-darwin-x64': 1.0.2
-      '@julienvincent/tree-sitter-highlight-linux-arm64-gnu': '@julienvincent/tree-sitter-highlight-linux-arm64@1.0.2'
-      '@julienvincent/tree-sitter-highlight-linux-x64-gnu': '@julienvincent/tree-sitter-highlight-linux-x64@1.0.2'
+      '@julienvincent/tree-sitter-highlight-darwin-arm64': 1.0.3
+      '@julienvincent/tree-sitter-highlight-darwin-x64': 1.0.3
+      '@julienvincent/tree-sitter-highlight-linux-arm64-gnu': '@julienvincent/tree-sitter-highlight-linux-arm64@1.0.3'
+      '@julienvincent/tree-sitter-highlight-linux-x64-gnu': '@julienvincent/tree-sitter-highlight-linux-x64@1.0.3'
 
   '@mdx-js/mdx@3.1.1':
     dependencies:

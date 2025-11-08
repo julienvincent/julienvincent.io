@@ -23,9 +23,9 @@
     "tailwind-merge": "^3.3.1"
   },
   "devDependencies": {
-    "@julienvincent/rehype-tree-sitter-highlight": "^1.0.2",
-    "@julienvincent/tree-sitter-highlight-darwin-arm64": "^1.0.2",
-    "@julienvincent/tree-sitter-highlight-linux-arm64": "^1.0.2",
+    "@julienvincent/rehype-tree-sitter-highlight": "^1.0.3",
+    "@julienvincent/tree-sitter-highlight-darwin-arm64": "^1.0.3",
+    "@julienvincent/tree-sitter-highlight-linux-arm64": "^1.0.3",
     "@mdx-js/react": "^3.1.1",
     "@mdx-js/rollup": "^3.1.1",
     "@tailwindcss/vite": "^4.1.16",
