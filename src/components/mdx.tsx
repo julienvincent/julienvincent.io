@@ -2,37 +2,104 @@ import type { MDXComponents } from 'mdx/types';
 import { cn } from '@/lib/utils';
 import type { ComponentProps } from 'react';
 import { FileIcon } from 'lucide-react';
-import { Link as RouterLink } from '@tanstack/react-router';
+import { Link as RouterLink, useLocation } from '@tanstack/react-router';
 import * as date from 'date-fns';
 import TableOfContents from './table-of-contents';
 import Carousel from './mdx/carousel.tsx';
 import { AspectRatio } from '@radix-ui/react-aspect-ratio';
+import React from 'react';
 
 const header_class =
-  'scroll-m-20 mt-10 mb-5 font-semibold tracking-tight font-mono text-accent';
+  'scroll-m-20 mt-10 mb-2 font-semibold tracking-tight font-mono text-accent wrap-anywhere';
 
-export function H1(props: ComponentProps<'h1'>) {
-  return <h1 {...props} className={cn(header_class, 'text-6xl')} />;
+export function Anchor(
+  props: ComponentProps<'h1'> & {
+    anchor?: boolean;
+  },
+) {
+  const location = useLocation();
+
+  const hash = React.useMemo(() => {
+    if (typeof props.children !== 'string') {
+      return;
+    }
+
+    return props.children.toLowerCase().split(' ').join('-');
+  }, [props.children]);
+
+  if (props.anchor ?? (true && hash)) {
+    return (
+      <div className="flex" id={hash}>
+        <RouterLink
+          className="mdx-anchor"
+          hashScrollIntoView
+          hash={hash}
+          to={location.pathname}
+          activeOptions={{ includeHash: true }}
+        />
+        {props.children}
+      </div>
+    );
+  }
+
+  return props.children;
 }
 
-export function H2(props: ComponentProps<'h1'>) {
-  return <h2 {...props} className={cn(header_class, 'text-5xl')} />;
+export type HeadingProps = ComponentProps<'h1'> & { anchor?: boolean };
+
+export function H1(props: HeadingProps) {
+  return (
+    <h1 className={cn(header_class, 'text-6xl', props.className)}>
+      <Anchor {...props} />
+    </h1>
+  );
 }
 
-export function H3(props: ComponentProps<'h1'>) {
-  return <h3 {...props} className={cn(header_class, 'text-4xl')} />;
+export function H2(props: HeadingProps) {
+  return (
+    <h2
+      className={cn(
+        header_class,
+        'text-5xl',
+        props.className,
+        (props.anchor ?? true) && 'ml-2',
+      )}
+    >
+      <Anchor {...props} />
+    </h2>
+  );
 }
 
-export function H4(props: ComponentProps<'h1'>) {
-  return <h4 {...props} className={cn(header_class, 'text-3xl')} />;
+export function H3(props: HeadingProps) {
+  return (
+    <h3 className={cn(header_class, 'text-4xl', props.className)}>
+      <Anchor {...props} />
+    </h3>
+  );
 }
 
-export function H5(props: ComponentProps<'h1'>) {
-  return <h5 {...props} className={cn(header_class, 'text-2xl')} />;
+export function H4(props: HeadingProps) {
+  return (
+    <h4 className={cn(header_class, 'text-3xl', props.className)}>
+      <Anchor {...props} />
+    </h4>
+  );
 }
 
-export function H6(props: ComponentProps<'h1'>) {
-  return <h6 {...props} className={cn(header_class, 'text-1xl')} />;
+export function H5(props: HeadingProps) {
+  return (
+    <h5 className={cn(header_class, 'text-2xl', props.className)}>
+      <Anchor {...props} />
+    </h5>
+  );
+}
+
+export function H6(props: HeadingProps) {
+  return (
+    <h6 className={cn(header_class, 'text-1xl', props.className)}>
+      <Anchor {...props} />
+    </h6>
+  );
 }
 
 export function Blockquote(props: ComponentProps<'blockquote'>) {
@@ -85,7 +152,7 @@ export function Hr(props: ComponentProps<'hr'>) {
 }
 
 export function P(props: ComponentProps<'p'>) {
-  return <p {...props} className="mb-5" />;
+  return <p {...props} className="mb-5 text-base" />;
 }
 
 export function Link(props: ComponentProps<'a'>) {
@@ -94,7 +161,7 @@ export function Link(props: ComponentProps<'a'>) {
       {...props}
       to={props.href}
       className={cn(
-        'font-semibold underline decoration-2 underline-offset-2',
+        'font-semibold underline decoration-2 underline-offset-4',
         'rounded-sm px-0.5',
         'hover:text-primary hover:decoration-primary',
         'active:text-primary active:decoration-primary',
@@ -183,14 +250,16 @@ export function Image(
   );
 }
 
+export function FormattedDate(props: { date: string }) {
+  return (
+    <p className="text-accent-secondary mt-2 mb-10 underline font-semibold underline-offset-5 decoration-dashed">
+      {date.format(new Date(props.date), 'dd MMMM y')}
+    </p>
+  );
+}
+
 const components: MDXComponents = {
-  Date: (props: { date: string }) => {
-    return (
-      <p className="text-accent-secondary mt-5 mb-10 underline font-semibold underline-offset-5 decoration-dashed">
-        {date.format(new Date(props.date), 'dd MMMM y')}
-      </p>
-    );
-  },
+  Date: FormattedDate,
 
   h1: H1,
   h2: H2,

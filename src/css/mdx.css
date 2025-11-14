@@ -6,3 +6,22 @@ ul.mdx li::before {
   font-size: 11px;
   color: var(--color-muted-foreground);
 }
+
+.with-anchors .mdx-anchor {
+  position: relative;
+
+  &::before {
+    position: absolute;
+    content: '#';
+    right: 0;
+    color: var(--color-muted);
+  }
+
+  &:hover {
+    &::before {
+      text-decoration: underline;
+      text-decoration-style: dashed;
+      text-decoration-thickness: 2px;
+    }
+  }
+}

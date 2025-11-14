@@ -11,6 +11,7 @@ import type { RouteMetadata } from './types/routes';
 const router = createRouter({
   routeTree,
   trailingSlash: 'preserve',
+  scrollRestoration: true,
 });
 declare module '@tanstack/react-router' {
   interface Register {

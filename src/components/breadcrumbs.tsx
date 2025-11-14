@@ -35,7 +35,7 @@ export function Breadcrumbs() {
 
   return (
     <nav aria-label="Breadcrumb" className="bg-background/70">
-      <ol className="mx-auto flex max-w-5xl gap-1 px-1 py-2 -mb-7 text-xs text-muted-foreground">
+      <ol className="mx-auto flex max-w-5xl gap-1 px-1 py-2 -mb-7 text-xs text-muted-foreground items-center overflow-hidden text-ellipsis">
         <li>
           <Link to="/" className="hover:text-foreground">
             Home

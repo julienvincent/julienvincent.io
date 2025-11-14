@@ -1,9 +1,10 @@
 import type { ReactElement } from 'react';
 import PageMeta from '@/components/page-meta';
 import type { RouteMetadata } from '@/types/routes';
+import { H1, FormattedDate } from '@/components/mdx';
 
-type BlogComponent = (props: { title: string; date: string }) => ReactElement;
-type ProjectComponent = (props: { title: string }) => ReactElement;
+type BlogComponent = (props: {}) => ReactElement;
+type ProjectComponent = (props: {}) => ReactElement;
 
 type Props = {
   Component: BlogComponent | React.LazyExoticComponent<BlogComponent>;
@@ -33,7 +34,12 @@ export function createBlogRoute(props: Props) {
             description={props.description}
             keywords={props.keywords}
           />
-          <Component title={props.title} date={props.date} />
+          <H1>{props.title}</H1>
+          <FormattedDate date={props.date} />
+
+          <div className="with-anchors">
+            <Component />
+          </div>
         </>
       );
     },
@@ -67,7 +73,10 @@ export function createProjectRoute(props: ProjectProps) {
             description={props.description}
             keywords={props.keywords}
           />
-          <Component title={props.title} />
+          <H1>{props.title}</H1>
+          <div className="with-anchors">
+            <Component />
+          </div>
         </>
       );
     },
