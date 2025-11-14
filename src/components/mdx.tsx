@@ -176,16 +176,28 @@ export function Link(props: ComponentProps<'a'>) {
 type PreProps = ComponentProps<'pre'> & {
   filename?: string;
   showLineNumbers?: any;
+  hideLineNumbers?: boolean;
 };
 export function Pre(props: PreProps) {
-  const { filename, className, children, showLineNumbers, ...rest } = props;
+  const {
+    filename,
+    className,
+    children,
+    showLineNumbers,
+    hideLineNumbers,
+    ...rest
+  } = props;
 
   if (!filename) {
-    const { showLineNumbers, ...rest } = props;
+    const { showLineNumbers, hideLineNumbers, ...rest } = props;
     return (
       <pre
         {...rest}
-        className={cn('rounded-md bg-code-background font-mono', className)}
+        className={cn(
+          'mdx mb-5 rounded-md',
+          hideLineNumbers ? '' : 'numbered',
+          className,
+        )}
       />
     );
   }
@@ -198,10 +210,7 @@ export function Pre(props: PreProps) {
       </div>
       <pre
         {...rest}
-        className={cn(
-          'rounded-md rounded-t-none bg-code-background',
-          className,
-        )}
+        className={cn('mdx mb-5 rounded-md rounded-t-none', className)}
       >
         {children}
       </pre>
@@ -210,12 +219,7 @@ export function Pre(props: PreProps) {
 }
 
 export function Code(props: ComponentProps<'code'>) {
-  return (
-    <code
-      {...props}
-      className={cn(props.className, 'mb-5 font-mono overflow-x-scroll')}
-    />
-  );
+  return <code {...props} className={cn(props.className)} />;
 }
 
 export function Img(props: ComponentProps<'img'>) {

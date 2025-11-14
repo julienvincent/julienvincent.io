@@ -122,7 +122,7 @@ additional queries to load up and append to the highlighter pipeline.
 
 Here is an example so you can see that in action. The below example has no fancy injections
 
-````markdown nolinenumbers="true"
+````markdown hideLineNumbers="true"
 ```clojure
 (defn some-func
   "This should now be **markdown**!"
@@ -133,7 +133,7 @@ Here is an example so you can see that in action. The below example has no fancy
 But if we attach the `query="docstrings"` property to the code block, this instructs the plugin to load more queries
 from the `./queries/docstrings` directory. And now we got some sweet, sweet markdown highlighting.
 
-````markdown query="docstrings" nolinenumbers="true"
+````markdown query="docstrings" hidelinenumbers="true"
 ```clojure query="docstrings"
 (defn some-func
   "This should now be **markdown**!"
