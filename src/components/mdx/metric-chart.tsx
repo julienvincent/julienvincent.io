@@ -123,3 +123,5 @@ export function MetricChart(props: Props) {
     </ChartContainer>
   );
 }
+
+export default MetricChart;

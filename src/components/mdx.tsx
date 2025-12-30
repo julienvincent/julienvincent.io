@@ -5,8 +5,6 @@ import { FileIcon } from 'lucide-react';
 import { Link as RouterLink, useLocation } from '@tanstack/react-router';
 import * as date from 'date-fns';
 import TableOfContents from './table-of-contents';
-import Carousel from './mdx/carousel.tsx';
-import { MetricChart } from './mdx/metric-chart.tsx';
 import { AspectRatio } from '@radix-ui/react-aspect-ratio';
 import React from 'react';
 
@@ -292,10 +290,9 @@ const components: MDXComponents = {
   img: Img,
   Image: Image,
 
-  Carousel: Carousel,
+  Carousel: React.lazy(() => import('./mdx/carousel.tsx')),
 
-  MetricChart,
-
+  MetricChart: React.lazy(async () => import('./mdx/metric-chart.tsx')),
   code: Code,
   pre: Pre,
 

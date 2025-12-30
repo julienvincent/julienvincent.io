@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { type CarouselApi } from '@/components/ui/carousel';
 import { Button } from '../ui/button';
-import { Square } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 type UseDotButtonType = {
