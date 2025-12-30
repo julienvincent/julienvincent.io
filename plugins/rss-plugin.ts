@@ -26,7 +26,7 @@ type ParsedBlogRoute = {
   hidden?: boolean;
 };
 
-const default_posts_dir = 'src/routes/posts';
+const default_posts_dir = 'src/routes';
 const default_feed_path = 'rss.xml';
 
 function escapeXml(value: string) {

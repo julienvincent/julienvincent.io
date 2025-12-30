@@ -1,15 +1,9 @@
-export type PostRouteMetadata = {
-  type: 'post';
+export type RouteMetadata = {
+  type: 'project' | 'post';
   title: string;
-  date: string;
+  date?: string;
+  description?: string;
   hidden?: boolean;
+  keywords?: string[];
+  include_in_rss_feed?: boolean;
 };
-
-export type ProjectRouteMetadata = {
-  type: 'project';
-  title: string;
-  description: string;
-  hidden?: boolean;
-};
-
-export type RouteMetadata = PostRouteMetadata | ProjectRouteMetadata;
