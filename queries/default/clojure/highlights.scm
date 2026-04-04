@@ -348,3 +348,18 @@
   (#eq? @_include "ns")
   .
   (sym_lit) @module)
+
+
+(list_lit
+  .
+  (sym_lit) @_include
+  (#eq? @_include "ns")
+  .
+  (sym_lit) ;; ns name
+  
+  (list_lit
+    (kwd_lit) @_require
+    (#eq? @_require ":require")
+    (vec_lit
+      .
+      (sym_lit) @module)))

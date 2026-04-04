@@ -104,7 +104,9 @@ pre.mdx.numbered code .numbered-code-line::before {
 .tree-sitter .keyword,
 .tree-sitter .keyword\.function,
 .tree-sitter .keyword\.conditional,
-.tree-sitter .keyword\.operator {
+.tree-sitter .keyword\.operator,
+.tree-sitter .keyword\.exception,
+.tree-sitter .keyword\.import {
   color: var(--color-code-red);
 }
 
@@ -121,7 +123,7 @@ pre.mdx.numbered code .numbered-code-line::before {
 }
 
 .tree-sitter .module {
-  color: var(--color-code-blue);
+  color: var(--color-code-yellow);
 }
 
 .tree-sitter .number {

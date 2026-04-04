@@ -17,6 +17,7 @@ import { Route as PostsIndexRouteImport } from './routes/posts/index'
 import { Route as PostsViewingJujutsuDiffsInNeovimRouteImport } from './routes/posts/viewing-jujutsu-diffs-in-neovim'
 import { Route as PostsTreesitterLanguageInjectionsRouteImport } from './routes/posts/treesitter-language-injections'
 import { Route as PostsTreesitterCodeBlocksRouteImport } from './routes/posts/treesitter-code-blocks'
+import { Route as PostsExtendingClojureTestWithFunctionsRouteImport } from './routes/posts/extending-clojure-test-with-functions'
 import { Route as ProjectsPlantOpsIndexRouteImport } from './routes/projects/plant-ops/index'
 import { Route as ProjectsFumeExtractorIndexRouteImport } from './routes/projects/fume-extractor/index'
 import { Route as ProjectsCartographerIndexRouteImport } from './routes/projects/cartographer/index'
@@ -65,6 +66,12 @@ const PostsTreesitterCodeBlocksRoute =
     path: '/treesitter-code-blocks',
     getParentRoute: () => PostsRoute,
   } as any)
+const PostsExtendingClojureTestWithFunctionsRoute =
+  PostsExtendingClojureTestWithFunctionsRouteImport.update({
+    id: '/extending-clojure-test-with-functions',
+    path: '/extending-clojure-test-with-functions',
+    getParentRoute: () => PostsRoute,
+  } as any)
 const ProjectsPlantOpsIndexRoute = ProjectsPlantOpsIndexRouteImport.update({
   id: '/plant-ops/',
   path: '/plant-ops/',
@@ -93,6 +100,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/posts': typeof PostsRouteWithChildren
   '/projects': typeof ProjectsRouteWithChildren
+  '/posts/extending-clojure-test-with-functions': typeof PostsExtendingClojureTestWithFunctionsRoute
   '/posts/treesitter-code-blocks': typeof PostsTreesitterCodeBlocksRoute
   '/posts/treesitter-language-injections': typeof PostsTreesitterLanguageInjectionsRoute
   '/posts/viewing-jujutsu-diffs-in-neovim': typeof PostsViewingJujutsuDiffsInNeovimRoute
@@ -105,6 +113,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/posts/extending-clojure-test-with-functions': typeof PostsExtendingClojureTestWithFunctionsRoute
   '/posts/treesitter-code-blocks': typeof PostsTreesitterCodeBlocksRoute
   '/posts/treesitter-language-injections': typeof PostsTreesitterLanguageInjectionsRoute
   '/posts/viewing-jujutsu-diffs-in-neovim': typeof PostsViewingJujutsuDiffsInNeovimRoute
@@ -120,6 +129,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/posts': typeof PostsRouteWithChildren
   '/projects': typeof ProjectsRouteWithChildren
+  '/posts/extending-clojure-test-with-functions': typeof PostsExtendingClojureTestWithFunctionsRoute
   '/posts/treesitter-code-blocks': typeof PostsTreesitterCodeBlocksRoute
   '/posts/treesitter-language-injections': typeof PostsTreesitterLanguageInjectionsRoute
   '/posts/viewing-jujutsu-diffs-in-neovim': typeof PostsViewingJujutsuDiffsInNeovimRoute
@@ -136,6 +146,7 @@ export interface FileRouteTypes {
     | '/'
     | '/posts'
     | '/projects'
+    | '/posts/extending-clojure-test-with-functions'
     | '/posts/treesitter-code-blocks'
     | '/posts/treesitter-language-injections'
     | '/posts/viewing-jujutsu-diffs-in-neovim'
@@ -148,6 +159,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/posts/extending-clojure-test-with-functions'
     | '/posts/treesitter-code-blocks'
     | '/posts/treesitter-language-injections'
     | '/posts/viewing-jujutsu-diffs-in-neovim'
@@ -162,6 +174,7 @@ export interface FileRouteTypes {
     | '/'
     | '/posts'
     | '/projects'
+    | '/posts/extending-clojure-test-with-functions'
     | '/posts/treesitter-code-blocks'
     | '/posts/treesitter-language-injections'
     | '/posts/viewing-jujutsu-diffs-in-neovim'
@@ -237,6 +250,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PostsTreesitterCodeBlocksRouteImport
       parentRoute: typeof PostsRoute
     }
+    '/posts/extending-clojure-test-with-functions': {
+      id: '/posts/extending-clojure-test-with-functions'
+      path: '/extending-clojure-test-with-functions'
+      fullPath: '/posts/extending-clojure-test-with-functions'
+      preLoaderRoute: typeof PostsExtendingClojureTestWithFunctionsRouteImport
+      parentRoute: typeof PostsRoute
+    }
     '/projects/plant-ops/': {
       id: '/projects/plant-ops/'
       path: '/plant-ops'
@@ -269,6 +289,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface PostsRouteChildren {
+  PostsExtendingClojureTestWithFunctionsRoute: typeof PostsExtendingClojureTestWithFunctionsRoute
   PostsTreesitterCodeBlocksRoute: typeof PostsTreesitterCodeBlocksRoute
   PostsTreesitterLanguageInjectionsRoute: typeof PostsTreesitterLanguageInjectionsRoute
   PostsViewingJujutsuDiffsInNeovimRoute: typeof PostsViewingJujutsuDiffsInNeovimRoute
@@ -276,6 +297,8 @@ interface PostsRouteChildren {
 }
 
 const PostsRouteChildren: PostsRouteChildren = {
+  PostsExtendingClojureTestWithFunctionsRoute:
+    PostsExtendingClojureTestWithFunctionsRoute,
   PostsTreesitterCodeBlocksRoute: PostsTreesitterCodeBlocksRoute,
   PostsTreesitterLanguageInjectionsRoute:
     PostsTreesitterLanguageInjectionsRoute,

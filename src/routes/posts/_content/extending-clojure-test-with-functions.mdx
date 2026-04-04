@@ -1,0 +1,232 @@
+Perhaps controversially, [multimethods](https://clojure.org/reference/multimethods) are one of my least favourite things
+about Clojure - coming up right behind [Clojure's deadly sin](https://clojure-goes-fast.com/blog/clojures-deadly-sin/).
+Fortunately, I almost never need to interact with one and can avoid them at my leisure in my personal hackery and at
+$work.
+
+> Many Clojurists live and die by the multimethod. I wouldn't be caught dead with one.
+
+One exception to this rule is the unavoidable `clojure.test` which makes liberal use of multimethods internally, and
+unfortunately also in the public API and primary
+[extension point](https://clojure.github.io/clojure/clojure.test-api.html) should you dare provide your own assertions.
+
+Clojure Test being what it is, I find myself having to deal with them on the daily.
+
+#### what's the big deal?
+
+This post is not intended to be a rant about multimethods, only how they are employed in `clojure.test`.
+
+##### discoverability
+
+The `clojure.test/is` API exposes symbols _masquerading_ as functions. Not only can this be incredibly confusing
+(especially to newcomers), it also very thoroughly breaks discoverability.
+
+I expect this was probably not as big a deal back in the day, before tools like clojure-lsp and clj-kondo came along and
+the semantic difference didn't matter too much. Now that we _do_ have these excellent tools for static-analysis we start
+to feel the ramifications of this decision.
+
+```clojure
+(ns example-test
+  (:require
+   [clojure.test :refer [is]]))
+
+(is (thrown-with-message? ...))
+```
+
+What is the signature for the `thrown-with-message?` form? Do you remember?
+
+Probably not, but that's OK because it was a trick question anyway. The form is actually `thrown-with-msg?` and
+unfortunately your editor and tools wouldn't have been able to tell you that either.
+
+Let me help you out - [here](https://clojure.github.io/clojure/clojure.test-api.html) is the link to the docs, which you
+will need because you can't `go-to-definition` on a symbol.
+
+##### bleed
+
+Because this is _the_ official extension point we will inevitably see the problems of it bleed into libraries. The most
+obvious example being the excellent [matcher-combinators](https://github.com/nubank/matcher-combinators) which, while an
+amazing asset, unfortunately suffers from the same inherited problems.
+
+In a sufficiently large codebase this also becomes prolific through internal extensions.
+
+##### mutate the system
+
+I find it a strange contrast working in a language which has immutability deep at its core and yet exposes contracts
+like multimethods which encourage extension through the mutation of globals.
+
+This is then inherited by `clojure.test` - if you want to make use of libraries like matcher-combinators you need to
+import, _somewhere_, the multimethod extensions.
+
+Woe is you if you forget to do this in one of your test namespaces and your tests start failing sporadically. Why?
+Because perhaps you are only running a subset of your tests, and the magic namespace is never imported!
+
+This particular sin would be much less of a problem if there was a way to import these extensions in a way that was only
+scoped to the target namespace. That is obviously not possible.
+
+---
+
+If you, like me, would like a (subjectively) better way to interact with and extend `clojure.test` then read on!
+
+#### hiding it under the carpet
+
+For the purpose of demonstration I will summon here a useful little assertion utility of which I make heavy use at
+$work.
+
+```clojure
+(ns io.julienvincent.example-test
+  (:require
+   [clojure.test :refer [deftest is]]
+   [io.julienvincent.test-extensions]))
+
+(defn- throw-something []
+  (throw (ex-info "This is an exception" {:a 1})))
+
+(deftest it-should-throw-test
+  (is (exception?
+       clojure.lang.ExceptionInfo
+       #"This is an exception"
+       {:a int?}
+
+       (throw-something))))
+```
+
+This is a powerful alternative to the built-in `thrown-with-msg?` assertion which enables checking additional properties
+of a thrown exception, and exposes the match syntax from
+[matcher-combinators](https://github.com/nubank/matcher-combinators).
+
+As you might expect, this works by extending the `clojure.test/assert-expr` multimethod which is itself called into by
+the `is` macro:
+
+```clojure
+(ns io.julienvincent.test-extensions
+  (:require
+   [clojure.test :as test]
+   [matcher-combinators.clj-test :refer [tagged-for-pretty-printing]]
+   [matcher-combinators.core :as match]
+   [matcher-combinators.matchers :as matchers]))
+
+(defmethod test/assert-expr 'exception? [msg form]
+  (let [[_ class-matcher msg-matcher data-matcher] form
+        body (nthnext form 4)]
+    `(let [form# (list 'thrown-match? '~class-matcher '~msg-matcher '~data-matcher
+                       '~@body)]
+       (try ~@body
+            (test/do-report {:type :fail
+                             :message ~msg
+                             :expected form#
+                             :actual (symbol "the expected exception wasn't thrown")})
+            (catch Exception ex#
+              (let [data# [ex# (ex-message ex#) (ex-data ex#)]
+                    test# [(matchers/pred (fn [value#]
+                                            (instance? ~class-matcher value#))
+                                          (str "Must be an instance of " ~class-matcher))
+                           ~msg-matcher
+                           ~data-matcher]
+                    match-result# (match/match test# data#)]
+                (if (match/indicates-match? match-result#)
+                  (clojure.test/do-report {:type :pass
+                                           :message ~msg
+                                           :expected form#
+                                           :actual ex#})
+                  (clojure.test/do-report {:type :fail
+                                           :message ~msg
+                                           :expected form#
+                                           :actual (tagged-for-pretty-printing
+                                                    (list '~'not form#)
+                                                    match-result#)
+                                           :ex-class ~class-matcher}))))))))
+```
+
+Just don't forget to implicitly mutate your environment by calling `[io.julienvincent.test-extensions]` (_somewhere_, at
+least) lest your tests start failing for undebuggable reasons!
+
+While we can't avoid the fact that `is` requires you to interface with it through multimethods, with a little bit of
+skulduggery we can _hide_ that fact from you!
+
+All one need do is expose a macro with the name of your assertion and have it construct the `is` expression using an
+internal, namespaced multimethod.
+
+```clojure showLineNumbers={8,39-47}
+(ns io.julienvincent.test
+  (:require
+   [clojure.test :as test]
+   [matcher-combinators.clj-test :refer [tagged-for-pretty-printing]]
+   [matcher-combinators.core :as match]
+   [matcher-combinators.matchers :as matchers]))
+
+(defmethod test/assert-expr 'io.julienvincent.test/-exception? [msg form]
+  (let [[_ class-matcher msg-matcher data-matcher] form
+        body (nthnext form 4)]
+    `(let [form# (list 'thrown-match? '~class-matcher '~msg-matcher '~data-matcher
+                       '~@body)]
+       (try ~@body
+            (test/do-report {:type :fail
+                             :message ~msg
+                             :expected form#
+                             :actual (symbol "the expected exception wasn't thrown")})
+            (catch Exception ex#
+              (let [data# [ex# (ex-message ex#) (ex-data ex#)]
+                    test# [(matchers/pred (fn [value#]
+                                            (instance? ~class-matcher value#))
+                                          (str "Must be an instance of " ~class-matcher))
+                           ~msg-matcher
+                           ~data-matcher]
+                    match-result# (match/match test# data#)]
+                (if (match/indicates-match? match-result#)
+                  (clojure.test/do-report {:type :pass
+                                           :message ~msg
+                                           :expected form#
+                                           :actual ex#})
+                  (clojure.test/do-report {:type :fail
+                                           :message ~msg
+                                           :expected form#
+                                           :actual (tagged-for-pretty-printing
+                                                    (list '~'not form#)
+                                                    match-result#)
+                                           :ex-class ~class-matcher}))))))))
+
+(defmacro exception?
+  "Assert that the provided `body` throws a matching exception.
+
+   All provided matchers work as if passed through a matcher-combinators match? evaluator.
+
+   **DO NOT** nest this inside of a `clojure.test/is` form."
+  [class-matcher msg-matcher data-matcher & body]
+  `(test/is (io.julienvincent.test/-exception? ~class-matcher ~msg-matcher ~data-matcher
+                                               ~@body)))
+```
+
+Now when we want to go about using this assertion not only _can_ we require it, but we _need_ to. This is good for a
+number of reasons:
+
+1. Future readers don't need to guess at where this magical expression came from as it is explicitly described through
+   the namespace dependencies.
+2. We get discovery through clojure-lsp. We can auto-import it when trying to use the API, we get auto-complete over the
+   available APIs, and we can read the function signature and docstring describing how it is intended to be used.
+3. We can use tools like `go-to-definition` to navigate to the source and read/modify its internals.
+4. The implicit environment mutation (registering the multimethod extension) is bundled along with the intended public
+   API. We will never again forget to import the special extension namespace.
+
+We also completely side-step the issues that come from mutating the system. Because the only way to interact with this
+global extension is _through_ the imported API, it matters not at all _how_ it is implemented internally.
+
+```clojure showLineNumbers={4,10}
+(ns io.julienvincent.example-test
+  (:require
+   [clojure.test :refer [deftest]]
+   [io.julienvincent.test :as jv.test]))
+
+(defn- throw-something []
+  (throw (ex-info "This is an exception" {:a 1})))
+
+(deftest it-should-throw-test
+  (jv.test/exception?
+   clojure.lang.ExceptionInfo
+   #"This is an exception"
+   {:a int?}
+
+   (throw-something)))
+```
+
+---
+
+/rant
